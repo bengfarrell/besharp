@@ -1,0 +1,14 @@
+{
+  "name": "krill",
+  "version": "1.0.0",
+  "dependencies": {
+    "lit": "^2.2.0",
+    "piano-keys-webcomponent-v0": "^1.0.3"
+  },
+  "devDependencies": {
+    "@web/dev-server": "^0.1.29"
+  },
+  "scripts": {
+    "serve": "./node_modules/.bin/wds --node-resolve --open=./index.html --watch"
+  }
+}
