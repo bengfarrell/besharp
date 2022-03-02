@@ -1,16 +1,22 @@
 {
-  "name": "krill",
+  "name": "bsharp",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "lit": "^2.2.0",
     "piano-keys-webcomponent-v0": "^1.0.3"
   },
   "devDependencies": {
     "@web/dev-server": "^0.1.29",
-    "gh-pages": "^3.2.3",
-    "rollup": "^2.68.0"
+    "rollup": "^2.68.0",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "rollup-plugin-sourcemaps": "^0.6.3",
+    "rollup-plugin-clean": "^1.0.0",
+    "@web/rollup-plugin-html": "^1.10.1"
+
   },
   "scripts": {
-    "serve": "./node_modules/.bin/wds --node-resolve --open=./index.html --watch"
+    "serve": "./node_modules/.bin/wds --node-resolve --open=./index.html --watch",
+    "build": "./node_modules/.bin/rollup -c rollup.config.js"
   }
 }
