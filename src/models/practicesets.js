@@ -61,7 +61,7 @@ export class PracticeSetsController {
             pset.push( ...notes.map(note => note + '9'));
         }
 
-        PracticeSetsController.currentSet = pset.sort((a, b) => 0.5 - Math.random());;
+        PracticeSetsController.currentSet = pset.sort((a, b) => 0.5 - Math.random());
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });

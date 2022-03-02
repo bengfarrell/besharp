@@ -42,25 +42,26 @@ export class FlashCard extends LitElement {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
                 attempt: this.currentAttempt?.notes,
-                answer: this.currentQuestion ? new Chord(this.currentQuestion).notes : undefined }))
+                answer: this.currentQuestion ? new Chord(this.currentQuestion, 4).notes : undefined }))
         }
     }
 
     firstUpdated(_changedProperties) {
         super.firstUpdated(_changedProperties);
         MidiController.addListener( (data) => {
-            if (this.currentQuestion) {
+            if (this.currentQuestion && !this.transition) {
                 const answer = new Chord(this.currentQuestion);
                 const nooctave = MidiController.notes.map(note => note.substr(0, note.length - 1));
+                const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
 
                 let answered = 0;
-                nooctave.forEach(note => {
-                    if (answer.notes.indexOf(note) !== -1) {
+                uniquenooctave.forEach(note => {
+                    if (answer.notes.indexOf(note) === -1) {
                         answered = -1;
                     }
                 });
 
-                if (answered === 0 && nooctave.length === answer.notes.length) {
+                if (answered === 0 && uniquenooctave.length === answer.notes.length) {
                     answered = 1;
                 }
 
@@ -71,7 +72,7 @@ export class FlashCard extends LitElement {
                         break;
 
                     case 1:
-                        this.currentAttempt = { notes: nooctave, correct: false };
+                        this.currentAttempt = { notes: nooctave, correct: true };
                         this.onCorrect();
                         break;
                 }

@@ -6,7 +6,9 @@
     "piano-keys-webcomponent-v0": "^1.0.3"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.1.29"
+    "@web/dev-server": "^0.1.29",
+    "gh-pages": "^3.2.3",
+    "rollup": "^2.68.0"
   },
   "scripts": {
     "serve": "./node_modules/.bin/wds --node-resolve --open=./index.html --watch"

@@ -52,9 +52,9 @@ export class App extends LitElement {
 
         if (!e.playing && e.answer) {
             e.answer.forEach(note => {
-                this._pianoEl.setNoteDown(note, 4);
+                this._pianoEl.setNoteDown(note.substr(0, note.length-1), note.charAt(note.length-1));
             });
-            this.notes = e.answer.map(note => note + '4');
+            this.notes = e.answer;
         }
     }
 

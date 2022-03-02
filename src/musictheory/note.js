@@ -12,7 +12,7 @@ export const Note = {
      * @static
      * @type {Array.<string>}
      **/
-    sharpNotations: ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"],
+    sharpNotations: ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
 
     /**
      * incremental tones as flat notation
@@ -20,7 +20,7 @@ export const Note = {
      * @static
      * @type {Array.<string>}
      **/
-    flatNotations: ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab"],
+    flatNotations: ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"],
 
     /**
      * get notation index when notation is either flat or sharp
@@ -178,7 +178,7 @@ export const Note = {
 
         // double the array length
         var len = notesToIndex.length;
-        for ( var c = 0; c < len; c++ ) {
+        for (let c = 0; c < len; c++ ) {
             if (octave) {
                 notesToIndex.push(notesToIndex[c] + (octave+1));
             } else {
@@ -188,7 +188,7 @@ export const Note = {
 
         // add octave notation to the first half of the array
         if (octave) {
-            for (var c = 0; c < this.flatNotations.length; c++) {
+            for (let c = 0; c < this.flatNotations.length; c++) {
                 notesToIndex[c] += octave;
             }
         }
