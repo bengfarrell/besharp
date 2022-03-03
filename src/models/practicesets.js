@@ -11,6 +11,9 @@ export class PracticeSetsController {
         minorsevenths: {label: 'Minor Sevenths', value: false },
         majorsevenths: {label: 'Major Sevenths', value: false },
         ninths: {label: 'Ninths', value: false },
+        firstinversion: {label: 'First inversion', value: false },
+        secondinversion: {label: 'Second inversion', value: false },
+        thirdinversion: {label: 'Third inversion (7ths)', value: false },
     };
 
     static currentSet = [];
@@ -30,6 +33,7 @@ export class PracticeSetsController {
         }
         return PracticeSetsController.currentSet.pop();
     }
+
     updateOption(key, value) {
         PracticeSetsController.options[key].value = value;
         this.refreshPracticeSet();

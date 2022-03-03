@@ -56,7 +56,7 @@ export class MidiController {
                         const data = event.data;
                         const type = data[0] & 0xf0;
                         const note = data[1];
-                        const notation = [ ...Note.sharpNotations, ...Note.sharpNotations][(note % Note.sharpNotations.length) + 3];
+                        const notation = [ ...Note.sharpNotations, ...Note.sharpNotations][(note % Note.sharpNotations.length)];
                         const octave = Math.floor(note / Note.sharpNotations.length) - 1;
                         const velocity = data[2];
 
