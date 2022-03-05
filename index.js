@@ -351,6 +351,17 @@ const Note = {
         return ntObj.octave * this.sharpNotations.length + ntindx;
     },
 
+    sort(notes) {
+        return notes.sort((noteA, noteB) => {
+            const octaveA = noteA.charAt(noteA.length - 1);
+            const octaveB = noteB.charAt(noteB.length - 1);
+            if (octaveA !== octaveB) {
+                return noteA.charAt(noteA.length - 1) - noteB.charAt(noteB.length - 1) ;
+            }
+            return Note.sharpNotations.indexOf(noteA.substr(0, noteA.length -1)) - Note.sharpNotations.indexOf(noteB.substr(0, noteB.length -1));
+        });
+    },
+
     /**
      * parse notation to notation and octave
      * @param notation
@@ -1102,18 +1113,21 @@ class Question {
     }
 
     isCorrect(inputnotes) {
-        this.lastAttempt = inputnotes;
-        if (inputnotes.length < inputnotes.length) {
+        const nooctave = inputnotes.map(note => note.substr(0, note.length - 1));
+        const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
+
+        this.lastAttempt = uniquenooctave;
+        if (uniquenooctave.length < this.notes.length) {
             return undefined;
         }
 
         if (this.enforceOrder) {
-            const correct = this.notes.join(',') === inputnotes.join(',');
-            this.answerText = correct ? 'Correct!' : `Sorry, you played ${inputnotes.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
+            const correct = this.notes.join(',') === uniquenooctave.join(',');
+            this.answerText = correct ? 'Correct!' : `Sorry, you played ${uniquenooctave.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
             return correct;
         } else {
-            for (let c = 0; c < inputnotes.length; c++) {
-                if (this.notes.indexOf(inputnotes[c]) === -1) {
+            for (let c = 0; c < uniquenooctave.length; c++) {
+                if (this.notes.indexOf(uniquenooctave[c]) === -1) {
                     this.answerText = `Sorry, you played ${this.lastAttempt.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
                     return false;
                 }
@@ -1433,6 +1447,9 @@ class MidiController {
 
             MidiController.inputs = [];
             MidiController.inputs = Array.from(midi.inputs.values());
+            if (MidiController.inputs.length > 0) {
+                this.chooseInput((MidiController.inputs[0].id));
+            }
             MidiController.hosts.forEach(host => {
                 host.requestUpdate();
             });
@@ -1476,6 +1493,7 @@ class MidiController {
                                 if (indx === -1) {
                                     MidiController.notes.push(notation + octave);
                                 }
+                                MidiController.notes = Note.sort(MidiController.notes);
                                 break;
                             case 128: // noteOff message
                                 notedata.type = 'off';
@@ -1563,9 +1581,7 @@ class FlashCard extends s {
         super.firstUpdated(_changedProperties);
         MidiController.addListener( (data) => {
             if (this.currentQuestion && !this.transition) {
-                const nooctave = MidiController.notes.map(note => note.substr(0, note.length - 1));
-                const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
-                const correct = this.currentQuestion.isCorrect(uniquenooctave);
+                const correct = this.currentQuestion.isCorrect(MidiController.notes);
                 if (correct === true) {
                     this.onCorrect();
                 } else if (correct === false) {
@@ -1849,7 +1865,9 @@ const template$1 = (scope) => {
     return $`
         <button @click=${scope.handleStartClick}>${scope.started ? 'Stop' : 'Start'}</button>
         <krill-midisetup class="section"></krill-midisetup>
-        <krill-theoryoptions class="section"></krill-theoryoptions>`;
+        <krill-theoryoptions class="section"></krill-theoryoptions>
+        <p>Want to try this and don't have a MIDI keyboard?</p>
+        <p>For now you can fake (C)orrect or (W)rong answers by hitting the C or W keys.</p>`;
 };
 
 const styles$1 = r$2`
@@ -1872,6 +1890,10 @@ const styles$1 = r$2`
   
   .section, button {
     margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 11px;
   }
 `;
 
