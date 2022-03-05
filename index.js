@@ -1596,7 +1596,7 @@ class FlashCard extends s {
                 this.onCorrect();
             }
             if (e.key === 'w') {
-                this.currentQuestion.isCorrect(['A#', 'B', 'C']);
+                this.currentQuestion.isCorrect(['A#3', 'B4', 'C4']);
                 this.onIncorrect();
             }
         });
@@ -1867,7 +1867,8 @@ const template$1 = (scope) => {
         <krill-midisetup class="section"></krill-midisetup>
         <krill-theoryoptions class="section"></krill-theoryoptions>
         <p>Want to try this and don't have a MIDI keyboard?</p>
-        <p>For now you can fake (C)orrect or (W)rong answers by hitting the C or W keys.</p>`;
+        <p>For now you can fake (C)orrect or (W)rong answers by hitting the C or W keys.</p>
+        <h4>Please use in Chrome/Edge only</h4>`;
 };
 
 const styles$1 = r$2`
