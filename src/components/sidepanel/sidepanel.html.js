@@ -8,5 +8,6 @@ export const template = (scope) => {
         <krill-midisetup class="section"></krill-midisetup>
         <krill-theoryoptions class="section"></krill-theoryoptions>
         <p>Want to try this and don't have a MIDI keyboard?</p>
-        <p>For now you can fake (C)orrect or (W)rong answers by hitting the C or W keys.</p>`;
+        <p>For now you can fake (C)orrect or (W)rong answers by hitting the C or W keys.</p>
+        <h4>Please use in Chrome/Edge only</h4>`;
 }

@@ -63,7 +63,7 @@ export class FlashCard extends LitElement {
                 this.onCorrect();
             }
             if (e.key === 'w') {
-                this.currentQuestion.isCorrect(['A#', 'B', 'C']);
+                this.currentQuestion.isCorrect(['A#3', 'B4', 'C4']);
                 this.onIncorrect();
             }
         });
