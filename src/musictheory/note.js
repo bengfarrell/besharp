@@ -89,6 +89,17 @@ export const Note = {
         return ntObj.octave * this.sharpNotations.length + ntindx;
     },
 
+    sort(notes) {
+        return notes.sort((noteA, noteB) => {
+            const octaveA = noteA.charAt(noteA.length - 1);
+            const octaveB = noteB.charAt(noteB.length - 1);
+            if (octaveA !== octaveB) {
+                return noteA.charAt(noteA.length - 1) - noteB.charAt(noteB.length - 1) ;
+            }
+            return Note.sharpNotations.indexOf(noteA.substr(0, noteA.length -1)) - Note.sharpNotations.indexOf(noteB.substr(0, noteB.length -1));
+        });
+    },
+
     /**
      * parse notation to notation and octave
      * @param notation

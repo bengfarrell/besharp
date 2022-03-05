@@ -1,4 +1,4 @@
-import { Note, Chord } from '../musictheory';
+import { Chord } from '../musictheory';
 
 export class Question {
     /** chord for question */
@@ -35,18 +35,21 @@ export class Question {
     }
 
     isCorrect(inputnotes) {
-        this.lastAttempt = inputnotes;
-        if (inputnotes.length < inputnotes.length) {
+        const nooctave = inputnotes.map(note => note.substr(0, note.length - 1));
+        const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
+
+        this.lastAttempt = uniquenooctave;
+        if (uniquenooctave.length < this.notes.length) {
             return undefined;
         }
 
         if (this.enforceOrder) {
-            const correct = this.notes.join(',') === inputnotes.join(',');
-            this.answerText = correct ? 'Correct!' : `Sorry, you played ${inputnotes.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
+            const correct = this.notes.join(',') === uniquenooctave.join(',');
+            this.answerText = correct ? 'Correct!' : `Sorry, you played ${uniquenooctave.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
             return correct;
         } else {
-            for (let c = 0; c < inputnotes.length; c++) {
-                if (this.notes.indexOf(inputnotes[c]) === -1) {
+            for (let c = 0; c < uniquenooctave.length; c++) {
+                if (this.notes.indexOf(uniquenooctave[c]) === -1) {
                     this.answerText = `Sorry, you played ${this.lastAttempt.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
                     return false;
                 }

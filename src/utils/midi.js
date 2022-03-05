@@ -25,6 +25,9 @@ export class MidiController {
 
             MidiController.inputs = [];
             MidiController.inputs = Array.from(midi.inputs.values());
+            if (MidiController.inputs.length > 0) {
+                this.chooseInput((MidiController.inputs[0].id));
+            }
             MidiController.hosts.forEach(host => {
                 host.requestUpdate();
             });
@@ -68,6 +71,7 @@ export class MidiController {
                                 if (indx === -1) {
                                     MidiController.notes.push(notation + octave);
                                 }
+                                MidiController.notes = Note.sort(MidiController.notes);
                                 break;
                             case 128: // noteOff message
                                 notedata.type = 'off';

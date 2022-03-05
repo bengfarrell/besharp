@@ -48,9 +48,7 @@ export class FlashCard extends LitElement {
         super.firstUpdated(_changedProperties);
         MidiController.addListener( (data) => {
             if (this.currentQuestion && !this.transition) {
-                const nooctave = MidiController.notes.map(note => note.substr(0, note.length - 1));
-                const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
-                const correct = this.currentQuestion.isCorrect(uniquenooctave);
+                const correct = this.currentQuestion.isCorrect(MidiController.notes);
                 if (correct === true) {
                     this.onCorrect();
                 } else if (correct === false) {
