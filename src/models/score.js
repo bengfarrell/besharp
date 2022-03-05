@@ -7,7 +7,16 @@ export class ScoreModelController {
 
     host;
 
+    static stats = {
+        chords: {}
+    }
+
     constructor(host) {
+        const saveSettings = localStorage.getItem('bsharp-stats');
+        if (saveSettings) {
+            ScoreModelController.stats = JSON.parse(saveSettings);
+            console.log('load stats', ScoreModelController.stats)
+        }
         (this.host = host).addController(this);
         ScoreModelController.hosts.push(host);
     }
@@ -24,15 +33,25 @@ export class ScoreModelController {
         return this.incorrect + this.correct;
     }
 
-    incrementCorrect() {
+    incrementCorrect(chord, inversion) {
+        if (!ScoreModelController.stats.chords[chord.inversionNotation(inversion)]) {
+            ScoreModelController.stats.chords[chord.inversionNotation(inversion)] = { incorrect: 0, correct: 0 };
+        }
+        ScoreModelController.stats.chords[chord.inversionNotation(inversion)].correct ++;
         ScoreModelController.correctAnswers ++;
+        ScoreModelController.save();
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         })
     }
 
-    incrementIncorrect() {
+    incrementIncorrect(chord, inversion) {
+        if (!ScoreModelController.stats.chords[chord.inversionNotation(inversion)]) {
+            ScoreModelController.stats.chords[chord.inversionNotation(inversion)] = { incorrect: 0, correct: 0 };
+        }
+        ScoreModelController.stats.chords[chord.inversionNotation(inversion)].incorrect ++;
         ScoreModelController.incorrectAnswers ++;
+        ScoreModelController.save();
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         });
@@ -42,5 +61,13 @@ export class ScoreModelController {
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         })
+    }
+
+    save() {
+        ScoreModelController.save();
+    }
+
+    static save() {
+        localStorage.setItem('bsharp-stats', JSON.stringify(ScoreModelController.stats));
     }
 }

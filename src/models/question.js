@@ -76,6 +76,7 @@ export class Question {
                 case 'third':
                     this.inversion = 3;
                     if (chord.notes.length < 4) {
+                        this.inversion = 0;
                         this.inversionLabel = 'the root';
                     }
                     return chord.getInversion(3);

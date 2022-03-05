@@ -33,6 +33,10 @@ export class PracticeSetsController {
     static currentSet = [];
 
     constructor(host) {
+        const saveSettings = localStorage.getItem('bsharp-options');
+        if (saveSettings) {
+            PracticeSetsController.options = JSON.parse(saveSettings);
+        }
         if (host) {
             (this.host = host).addController(this);
             PracticeSetsController.hosts.push(host);
@@ -92,5 +96,12 @@ export class PracticeSetsController {
     hostConnected() {
         this.host.requestUpdate();
     }
+
+    save() {
+        PracticeSetsController.save();
+    }
+
+    static save() {
+        localStorage.setItem('bsharp-options', JSON.stringify(PracticeSetsController.options));
+    }
 }
-window.PracticeSet = PracticeSetsController;

@@ -72,12 +72,12 @@ export class FlashCard extends LitElement {
     }
 
     onCorrect() {
-        this.score.incrementCorrect();
+        this.score.incrementCorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
         this.transitionToNextQuestion();
     }
 
     onIncorrect() {
-        this.score.incrementIncorrect();
+        this.score.incrementIncorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
         this.transitionToNextQuestion();
     }
 

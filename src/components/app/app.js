@@ -52,7 +52,6 @@ export class App extends LitElement {
 
         if (!e.playing && e.question) {
             const answerWithSampleOctave = new Chord(e.question.chord.notation, 4).inversion(e.question.inversion);
-            console.log(answerWithSampleOctave)
             answerWithSampleOctave.forEach(note => {
                 this._pianoEl.setNoteDown(note.substr(0, note.length-1), note.charAt(note.length-1));
             });

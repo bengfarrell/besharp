@@ -28,6 +28,17 @@ export class Chord {
         this._root = this._notes[0];
     }
 
+    inversionNotation(num) {
+        if (num === 0) {
+            return this.notation + (this.rootOctave ? this.rootOctave : '');
+        }
+        const possibleOctave = this._notes[0].charAt(this._notes.length - 2);
+        const rootOctave = possibleOctave == Number(possibleOctave) ? possibleOctave : undefined;
+        // strip octaves if present
+        const inversion = rootOctave ? this.notes.slice().map(note => note.substr(0, note.length - 1)) : this.notes.slice();
+        return this.notation + (this.rootOctave ? this.rootOctave : '') + '/' + inversion[num];
+    }
+
     /**
      * get chord inversion
      * @param inversion
