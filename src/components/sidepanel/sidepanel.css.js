@@ -21,4 +21,8 @@ export const styles = css`
   .section, button {
     margin-bottom: 8px;
   }
+  
+  p {
+    font-size: 11px;
+  }
 `;
