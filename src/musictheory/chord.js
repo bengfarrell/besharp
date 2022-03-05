@@ -25,6 +25,43 @@ export class Chord {
         /** @type {Array.<string>} notes in built chord */
         this._notes = [];
         this.buildChord();
+        this._root = this._notes[0];
+    }
+
+    /**
+     * get chord inversion
+     * @param inversion
+     *
+     * @return {Array.<string>} notes
+     */
+    inversion(num) {
+        const possibleOctave = this._notes[0].charAt(this._notes.length - 2);
+        const rootOctave = possibleOctave == Number(possibleOctave) ? possibleOctave : undefined;
+
+        // strip octaves if present
+        const inversion = rootOctave ? this.notes.slice().map(note => note.substr(0, note.length - 1)) : this.notes.slice();
+
+        for (let c = 0; c < num; c ++) {
+            const result = inversion.shift();
+            inversion.push(result);
+        }
+
+        let positionInScale;
+        let octave = rootOctave;
+        if (rootOctave) {
+            inversion.forEach((note, index) => {
+                if (!positionInScale) {
+                    positionInScale = Note.sharpNotations.indexOf(inversion[index]);
+                } else {
+                    if (positionInScale > Note.sharpNotations.indexOf(inversion[index])) {
+                        octave ++;
+                    }
+                    positionInScale = Note.sharpNotations.indexOf(inversion[index]);
+                }
+                inversion[index] += octave;
+            });
+        }
+        return inversion;
     }
 
     /**
@@ -37,11 +74,19 @@ export class Chord {
     }
 
     /**
+     * notation getter
+     * @return {string|*}
+     */
+    get notation() {
+        return this._notation;
+    }
+
+    /**
      * chord notation setter
      *
      * @param {string} notation
      */
-    setNotation(value) {
+    set notation(value) {
         this._notation = value;
         this.buildChord();
     }
@@ -51,7 +96,7 @@ export class Chord {
      *
      * @param {string} root
      */
-    setRoot(value) {
+    set root(value) {
         this._root = value;
         this.buildChord();
     }
@@ -61,7 +106,7 @@ export class Chord {
      *
      * @return {string} root note
      */
-    getRoot() {
+    get root() {
         return this._root;
     }
 
@@ -70,7 +115,7 @@ export class Chord {
      *
      * @param {number} octave
      */
-    setRootOctave(value) {
+    set rootOctave(value) {
         this._rootOctave = value;
         this.buildChord();
     }
@@ -80,7 +125,7 @@ export class Chord {
      *
      * @return {number} root octave
      */
-    getRootOctave() {
+    get rootOctave() {
         return this._rootOctave;
     }
 
@@ -516,3 +561,5 @@ export class Chord {
         }
     }
 }
+
+window.Chord = Chord;

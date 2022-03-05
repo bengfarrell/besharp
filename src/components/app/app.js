@@ -50,11 +50,13 @@ export class App extends LitElement {
         this.disableMIDI = !e.playing;
         this.clearNotes();
 
-        if (!e.playing && e.answer) {
-            e.answer.forEach(note => {
+        if (!e.playing && e.question) {
+            const answerWithSampleOctave = new Chord(e.question.chord.notation, 4).inversion(e.question.inversion);
+            console.log(answerWithSampleOctave)
+            answerWithSampleOctave.forEach(note => {
                 this._pianoEl.setNoteDown(note.substr(0, note.length-1), note.charAt(note.length-1));
             });
-            this.notes = e.answer;
+            this.notes = answerWithSampleOctave;
         }
     }
 

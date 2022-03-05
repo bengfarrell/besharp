@@ -22,7 +22,6 @@ export class FlashCard extends LitElement {
         this.transition = false;
         this.started = false;
         this.currentQuestion = undefined;
-        this.currentAttempt = undefined;
     }
 
     score = new ScoreModelController(this);
@@ -41,8 +40,7 @@ export class FlashCard extends LitElement {
         if (_changedProperties.has('transition')) {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
-                attempt: this.currentAttempt?.notes,
-                answer: this.currentQuestion ? new Chord(this.currentQuestion, 4).notes : undefined }))
+                question: this.currentQuestion ? this.currentQuestion : undefined }))
         }
     }
 
@@ -50,43 +48,24 @@ export class FlashCard extends LitElement {
         super.firstUpdated(_changedProperties);
         MidiController.addListener( (data) => {
             if (this.currentQuestion && !this.transition) {
-                const answer = new Chord(this.currentQuestion);
                 const nooctave = MidiController.notes.map(note => note.substr(0, note.length - 1));
                 const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
-
-                let answered = 0;
-                uniquenooctave.forEach(note => {
-                    if (answer.notes.indexOf(note) === -1) {
-                        answered = -1;
-                    }
-                });
-
-                if (answered === 0 && uniquenooctave.length === answer.notes.length) {
-                    answered = 1;
-                }
-
-                switch (answered) {
-                    case -1:
-                        this.currentAttempt = { notes: nooctave, correct: false };
-                        this.onIncorrect();
-                        break;
-
-                    case 1:
-                        this.currentAttempt = { notes: nooctave, correct: true };
-                        this.onCorrect();
-                        break;
+                const correct = this.currentQuestion.isCorrect(uniquenooctave);
+                if (correct === true) {
+                    this.onCorrect();
+                } else if (correct === false) {
+                    this.onIncorrect();
                 }
             }
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'c') {
-                const answer = new Chord(this.currentQuestion);
-                this.currentAttempt = { notes: answer.notes, correct: true };
+                this.currentQuestion.isCorrect(this.currentQuestion.notes);
                 this.onCorrect();
             }
             if (e.key === 'w') {
-                this.currentAttempt = { notes: ['C', 'Ab', 'G#'], correct: false };
+                this.currentQuestion.isCorrect(['A#', 'B', 'C']);
                 this.onIncorrect();
             }
         });

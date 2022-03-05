@@ -3,8 +3,7 @@ export class PlayModeEvent extends Event {
 
     constructor(opts) {
         super(PlayModeEvent.eventType, opts);
-        this.attempt = opts.attempt;
-        this.answer = opts.answer;
+        this.question = opts.question;
         this.playing = opts.playing;
     }
 }
