@@ -520,6 +520,17 @@ class Chord {
         this._root = this._notes[0];
     }
 
+    inversionNotation(num) {
+        if (num === 0) {
+            return this.notation + (this.rootOctave ? this.rootOctave : '');
+        }
+        const possibleOctave = this._notes[0].charAt(this._notes.length - 2);
+        const rootOctave = possibleOctave == Number(possibleOctave) ? possibleOctave : undefined;
+        // strip octaves if present
+        const inversion = rootOctave ? this.notes.slice().map(note => note.substr(0, note.length - 1)) : this.notes.slice();
+        return this.notation + (this.rootOctave ? this.rootOctave : '') + '/' + inversion[num];
+    }
+
     /**
      * get chord inversion
      * @param inversion
@@ -1132,6 +1143,7 @@ class Question {
                 case 'third':
                     this.inversion = 3;
                     if (chord.notes.length < 4) {
+                        this.inversion = 0;
                         this.inversionLabel = 'the root';
                     }
                     return chord.getInversion(3);
@@ -1175,6 +1187,10 @@ class PracticeSetsController {
     static currentSet = [];
 
     constructor(host) {
+        const saveSettings = localStorage.getItem('bsharp-options');
+        if (saveSettings) {
+            PracticeSetsController.options = JSON.parse(saveSettings);
+        }
         if (host) {
             (this.host = host).addController(this);
             PracticeSetsController.hosts.push(host);
@@ -1234,8 +1250,15 @@ class PracticeSetsController {
     hostConnected() {
         this.host.requestUpdate();
     }
+
+    save() {
+        PracticeSetsController.save();
+    }
+
+    static save() {
+        localStorage.setItem('bsharp-options', JSON.stringify(PracticeSetsController.options));
+    }
 }
-window.PracticeSet = PracticeSetsController;
 
 class ScoreModelController {
     static hosts = [];
@@ -1246,7 +1269,16 @@ class ScoreModelController {
 
     host;
 
+    static stats = {
+        chords: {}
+    }
+
     constructor(host) {
+        const saveSettings = localStorage.getItem('bsharp-stats');
+        if (saveSettings) {
+            ScoreModelController.stats = JSON.parse(saveSettings);
+            console.log('load stats', ScoreModelController.stats);
+        }
         (this.host = host).addController(this);
         ScoreModelController.hosts.push(host);
     }
@@ -1263,15 +1295,25 @@ class ScoreModelController {
         return this.incorrect + this.correct;
     }
 
-    incrementCorrect() {
+    incrementCorrect(chord, inversion) {
+        if (!ScoreModelController.stats.chords[chord.inversionNotation(inversion)]) {
+            ScoreModelController.stats.chords[chord.inversionNotation(inversion)] = { incorrect: 0, correct: 0 };
+        }
+        ScoreModelController.stats.chords[chord.inversionNotation(inversion)].correct ++;
         ScoreModelController.correctAnswers ++;
+        ScoreModelController.save();
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         });
     }
 
-    incrementIncorrect() {
+    incrementIncorrect(chord, inversion) {
+        if (!ScoreModelController.stats.chords[chord.inversionNotation(inversion)]) {
+            ScoreModelController.stats.chords[chord.inversionNotation(inversion)] = { incorrect: 0, correct: 0 };
+        }
+        ScoreModelController.stats.chords[chord.inversionNotation(inversion)].incorrect ++;
         ScoreModelController.incorrectAnswers ++;
+        ScoreModelController.save();
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         });
@@ -1281,6 +1323,14 @@ class ScoreModelController {
         ScoreModelController.hosts.forEach(host => {
             host.requestUpdate();
         });
+    }
+
+    save() {
+        ScoreModelController.save();
+    }
+
+    static save() {
+        localStorage.setItem('bsharp-stats', JSON.stringify(ScoreModelController.stats));
     }
 }
 
@@ -1537,12 +1587,12 @@ class FlashCard extends s {
     }
 
     onCorrect() {
-        this.score.incrementCorrect();
+        this.score.incrementCorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
         this.transitionToNextQuestion();
     }
 
     onIncorrect() {
-        this.score.incrementIncorrect();
+        this.score.incrementIncorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
         this.transitionToNextQuestion();
     }
 
@@ -1741,7 +1791,7 @@ const template$2 = (scope) => {
         ${renderOptions(scope, scope.sets.options)}`;
 };
 
-const renderOptions = (scope, opts, nested) => {
+const renderOptions = (scope, opts) => {
     return $`${Object.entries(opts).map( (entry) => {
         const classes = { section: entry[1].section };
         return $`
@@ -1750,6 +1800,7 @@ const renderOptions = (scope, opts, nested) => {
                 <input type="checkbox" 
                        @change=${(event) => {
                            entry[1].value = event.target.checked;
+                           scope.sets.save();
                            if (entry[1].refreshSet) {
                                scope.sets.refreshPracticeSet();
                            }
@@ -1940,7 +1991,6 @@ class App extends s {
 
         if (!e.playing && e.question) {
             const answerWithSampleOctave = new Chord(e.question.chord.notation, 4).inversion(e.question.inversion);
-            console.log(answerWithSampleOctave);
             answerWithSampleOctave.forEach(note => {
                 this._pianoEl.setNoteDown(note.substr(0, note.length-1), note.charAt(note.length-1));
             });
