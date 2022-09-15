@@ -4,16 +4,16 @@
   "type": "module",
   "dependencies": {
     "lit": "^2.2.0",
-    "piano-keys-webcomponent-v0": "^1.0.3"
+    "piano-keys-webcomponent-v0": "^1.0.3",
+    "tone": "^14.7.77"
   },
   "devDependencies": {
-    "@web/dev-server": "^0.1.29",
-    "rollup": "^2.68.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
-    "rollup-plugin-sourcemaps": "^0.6.3",
+    "@web/dev-server": "^0.1.29",
+    "@web/rollup-plugin-html": "^1.10.1",
+    "rollup": "^2.68.0",
     "rollup-plugin-clean": "^1.0.0",
-    "@web/rollup-plugin-html": "^1.10.1"
-
+    "rollup-plugin-sourcemaps": "^0.6.3"
   },
   "scripts": {
     "serve": "./node_modules/.bin/wds --node-resolve --open=./index.html --watch",

@@ -3,6 +3,7 @@ import { classMap } from 'lit/directives/class-map.js';
 
 export const template = (scope) => {
     return html`
+        <label>Music theory rules when generating random sets</label>
         ${renderOptions(scope, scope.sets.options)}`;
 }
 

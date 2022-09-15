@@ -9,6 +9,10 @@ export class TimerController {
 
     static sessionStartTime = 0;
 
+    static countDownStart = 0;
+
+    static countDownCurrent = -1;
+
     static timer = -1;
 
     host;
@@ -29,7 +33,15 @@ export class TimerController {
     refreshTime() {
         const elapsedQuestionTime = Date.now() - TimerController.questionStartTime;
         const elapsedSessionTime = Date.now() - TimerController.sessionStartTime;
-        TimerController.questionTimer = this.formatTime(elapsedQuestionTime);
+
+        if (TimerController.countDownStart && TimerController.countDownStart !== Infinity) {
+            TimerController.countDownCurrent = Math.max(TimerController.countDownStart - elapsedQuestionTime, 0);
+            TimerController.questionTimer = this.formatTime(TimerController.countDownCurrent);
+        } else if (TimerController.countDownStart === Infinity) {
+            TimerController.countDownCurrent = Infinity;
+        } else {
+            TimerController.questionTimer = this.formatTime(elapsedQuestionTime);
+        }
         TimerController.sessionTimer = this.formatTime(elapsedSessionTime);
         TimerController.hosts.forEach(host => {
             host.requestUpdate();
@@ -38,6 +50,17 @@ export class TimerController {
 
     resetQuestionTimer() {
         TimerController.questionStartTime = Date.now();
+        TimerController.countDownStart = 0;
+        this.refreshTime();
+    }
+
+    resetCountdownTimer(countdown) {
+        TimerController.questionStartTime = Date.now();
+        if (countdown === -1) {
+            TimerController.countDownStart = Infinity;
+        } else {
+            TimerController.countDownStart = countdown * 1000;
+        }
         this.refreshTime();
     }
 
@@ -51,6 +74,9 @@ export class TimerController {
     }
 
     formatTime(ms) {
+        if (ms === Infinity) {
+            return 'no timer'
+        }
         const ttlSeconds = ms / 1000;
         const seconds = Math.floor(ttlSeconds % 60);
         const secondsAsString = seconds < 10 ? '0' + seconds : seconds;
@@ -65,6 +91,14 @@ export class TimerController {
 
     get elapsedSessionTime() {
         return TimerController.sessionTimer;
+    }
+
+    get remainingTime() {
+        return TimerController.countDownCurrent;
+    }
+
+    get formattedRemainingTime() {
+        return this.formatTime(TimerController.countDownCurrent);
     }
 
     hostConnected() {

@@ -2,7 +2,7 @@ import { LitElement } from 'lit';
 import { template } from './midisetup.html';
 import { styles } from './midisetup.css';
 import { styles as button } from '../style/button.css';
-import { MidiController } from '../../utils/midi.js';
+import { MidiController } from '../../inputs/midi.js';
 
 export class MidiSetup extends LitElement {
     static get styles() { return [ styles, button ] }
@@ -11,6 +11,16 @@ export class MidiSetup extends LitElement {
 
     render() {
         return template(this);
+    }
+
+    learnTrigger() {
+        const temporaryNoteListener = (data) => {
+            if (data.type === 'down') {
+                this.midi.currentTrigger = data.note + data.octave;
+                this.midi.removeListener(temporaryNoteListener);
+            }
+        };
+        this.midi.addListener(temporaryNoteListener);
     }
 
     handleMidiRefresh() {
@@ -22,4 +32,4 @@ export class MidiSetup extends LitElement {
     }
 }
 
-customElements.define('krill-midisetup', MidiSetup);
+customElements.define('bsharp-midisetup', MidiSetup);

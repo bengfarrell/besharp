@@ -8,9 +8,13 @@ export class TheoryOptions extends LitElement {
 
     sets = new PracticeSetsController(this);
 
+    constructor() {
+        super();
+    }
+
     render() {
         return template(this);
     }
 }
 
-customElements.define('krill-theoryoptions', TheoryOptions);
+customElements.define('bsharp-theoryoptions', TheoryOptions);

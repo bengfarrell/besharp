@@ -30,17 +30,30 @@ export class PracticeSetsController {
         }
     };
 
-    static currentSet = [];
+    static currentSet = PracticeSetsController.generateRandomSet();
+
+    static currentIndex = -1;
 
     constructor(host) {
-        const saveSettings = localStorage.getItem('bsharp-options');
-        if (saveSettings) {
-            PracticeSetsController.options = JSON.parse(saveSettings);
-        }
         if (host) {
             (this.host = host).addController(this);
             PracticeSetsController.hosts.push(host);
         }
+    }
+
+    set currentSet(notations) {
+        PracticeSetsController.currentSet = notations;
+        PracticeSetsController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    get currentSet() {
+        return PracticeSetsController.currentSet;
+    }
+
+    get currentIndex() {
+        return PracticeSetsController.currentIndex;
     }
 
     get options() {
@@ -52,16 +65,26 @@ export class PracticeSetsController {
         return keys.filter(key => this.options.inversions.options[key].value);
     }
 
-    get next() {
-        if (PracticeSetsController.currentSet.length === 0) {
-            this.refreshPracticeSet();
+    next(ignoreInversions) {
+        PracticeSetsController.currentIndex ++;
+        if (PracticeSetsController.currentIndex > PracticeSetsController.currentSet.length -1) {
+            PracticeSetsController.currentIndex = 0;
         }
-
-        return new Question(PracticeSetsController.currentSet.pop(), this.activeInversions);
+        const next = PracticeSetsController.currentSet[PracticeSetsController.currentIndex]
+        PracticeSetsController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+        return new Question(next, ignoreInversions ? undefined : this.activeInversions);
     }
 
+    generateRandomSet(count = 10) {
+        PracticeSetsController.currentSet = PracticeSetsController.generateRandomSet(count);
+        PracticeSetsController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
 
-    refreshPracticeSet() {
+    static generateRandomSet(count = 10) {
         const pset = [];
         if (this.options.chords.options['naturals'].value) {
             pset.push(...Note.sharpNotations.filter(note => note.indexOf('#') === -1));
@@ -87,10 +110,7 @@ export class PracticeSetsController {
             pset.push( ...notes.map(note => note + '9'));
         }
 
-        PracticeSetsController.currentSet = pset.sort((a, b) => 0.5 - Math.random());
-        PracticeSetsController.hosts.forEach(host => {
-            host.requestUpdate();
-        });
+        return pset.sort((a, b) => 0.5 - Math.random()).splice(0, count);
     }
 
     hostConnected() {
@@ -104,4 +124,10 @@ export class PracticeSetsController {
     static save() {
         localStorage.setItem('bsharp-options', JSON.stringify(PracticeSetsController.options));
     }
+}
+
+const saveSettings = localStorage.getItem('bsharp-options');
+if (saveSettings) {
+    PracticeSetsController.options = JSON.parse(saveSettings);
+    PracticeSetsController.currentSet = PracticeSetsController.generateRandomSet();
 }

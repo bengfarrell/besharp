@@ -11,20 +11,34 @@ export const styles = css`
     display: flex;
     flex-direction: column;
   }
-  
-  krill-flashcard {
+
+  bsharp-flashcard {
     margin-bottom: 20px;
   }
-  
-  krill-score {
+
+  bsharp-score {
     margin-top: auto;
-  }  
-  
-  krill-sidepanel {
-    width: 250px;
-    height: 100%;
+  }
+
+  bsharp-sidepanel {
+    min-width: 230px;
+    width: 230px;
+    height: calc(100% - 30px);
+    padding: 15px;
     display: flex;
     flex-direction: column;
     background-color: #eaeaea;
+  }
+
+  #no-mode-header {
+    height: 100px;
+    display: inline-block;
+    margin-bottom: 5px;
+    padding: 15px;
+    width: calc(100% - 30px);
+  }
+
+  #main-container {
+    padding: 5px;
   }
 `;

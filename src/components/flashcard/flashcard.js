@@ -1,42 +1,59 @@
 import { LitElement } from 'lit';
 import { template } from './flashcard.html';
 import { styles } from './flashcard.css';
-import { Chord } from '../../musictheory';
+import { Note } from '../../musictheory';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { ScoreModelController } from '../../models/score';
 import { TimerController } from '../../models/timer';
-import { MidiController } from '../../utils/midi';
+import { InputsController, MidiController } from '../../inputs/index.js';
 import { PlayModeEvent } from './playmodeevent';
+import { App } from '../app';
 
 export class FlashCard extends LitElement {
     static get styles() { return [ styles ] }
 
     static properties = {
         currentQuestion: { type: String },
+        queuedQuestion: { type: String },
+        mode: { type: String },
+        currentAttempt: { type: Array },
         started: { type: Boolean },
         transition: { type: Boolean, reflect: true },
     };
 
     constructor() {
         super();
-        this.transition = false;
         this.started = false;
         this.currentQuestion = undefined;
+
+        this.timer.start();
+        this.transition = true;
+        this.transitionToNextQuestion();
+        this._countDown = 15;
     }
 
     score = new ScoreModelController(this);
     timer = new TimerController(this);
     practiceset = new PracticeSetsController(this);
-    midi = new MidiController(this);
+    inputs = new InputsController(this);
+    currentAttempt = [];
+
+    /**
+     * count down (in seconds) for liveplay
+     * @param val
+     */
+    set countDown(val) {
+        this._countDown = val;
+        this.timer.resetCountdownTimer(this._countDown);
+        this.requestUpdate('countDown');
+    }
 
     willUpdate(_changedProperties) {
         super.willUpdate(_changedProperties);
 
-        if (_changedProperties.has('started') && _changedProperties.get('started') === false) {
-            this.timer.start();
-            this.transitionToNextQuestion();
+        if (this.timer.remainingTime === 0) {
+            this.nextQuestion();
         }
-
         if (_changedProperties.has('transition')) {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
@@ -46,41 +63,61 @@ export class FlashCard extends LitElement {
 
     firstUpdated(_changedProperties) {
         super.firstUpdated(_changedProperties);
-        MidiController.addListener( (data) => {
+        InputsController.addListener( (data) => {
+            if (data.type === 'down' && data.note + data.octave === MidiController.nextQuestionTrigger) {
+                this.nextQuestion();
+                return;
+            }
             if (this.currentQuestion && !this.transition) {
-                const correct = this.currentQuestion.isCorrect(MidiController.notes);
-                if (correct === true) {
-                    this.onCorrect();
-                } else if (correct === false) {
-                    this.onIncorrect();
+                if (this.mode === App.QUIZ_MODE) {
+                    this.onQuizListener(data);
+                } else if (this.mode === App.LIVEPLAY_MODE) {
+                    this.onFreePlayListener(data);
                 }
             }
         });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'c') {
-                this.currentQuestion.isCorrect(this.currentQuestion.notes);
-                this.onCorrect();
-            }
-            if (e.key === 'w') {
-                this.currentQuestion.isCorrect(['A#3', 'B4', 'C4']);
-                this.onIncorrect();
-            }
-        });
     }
 
-    onCorrect() {
+    onFreePlayListener() {
+        const correct = this.currentQuestion.isCorrect(InputsController.notes);
+        if (correct === false) {
+            this.onIncorrect(false);
+        }
+    }
+
+    onQuizListener() {
+        this.currentAttempt.push(...InputsController.notes);
+        this.currentAttempt = [...new Set(this.currentAttempt)];
+        this.currentAttempt = Note.sort(this.currentAttempt);
+        const correct = this.currentQuestion.isCorrect(this.currentAttempt);
+        if (correct === true) {
+            this.onCorrect();
+        } else if (correct === false) {
+            this.onIncorrect();
+        }
+    }
+
+    onCorrect(advanceNext = true) {
         this.score.incrementCorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
-        this.transitionToNextQuestion();
+        if (advanceNext) {
+            this.transitionToNextQuestion();
+        }
+        const event = new Event('correct', { bubbles: true, composed: true });
+        this.dispatchEvent(event);
     }
 
-    onIncorrect() {
+    onIncorrect(advanceNext = true) {
         this.score.incrementIncorrect(this.currentQuestion.chord, this.currentQuestion.inversion);
-        this.transitionToNextQuestion();
+        if (advanceNext) {
+            this.transitionToNextQuestion();
+        }
+        const event = new Event('incorrect', { bubbles: true, composed: true });
+        this.dispatchEvent(event);
     }
 
     transitionToNextQuestion() {
         this.transition = true;
+        this.currentAttempt = [];
         setTimeout(() => {
             this.currentQuestion = undefined;
             this.timer.resetQuestionTimer();
@@ -90,8 +127,13 @@ export class FlashCard extends LitElement {
     }
 
     nextQuestion() {
-        this.timer.resetQuestionTimer();
-        this.currentQuestion = this.practiceset.next;
+        if (this.mode === App.LIVEPLAY_MODE) {
+            this.timer.resetCountdownTimer(this._countDown);
+        } else {
+            this.timer.resetQuestionTimer();
+        }
+        this.currentQuestion = this.practiceset.next(
+            this.mode === App.LIVEPLAY_MODE ? true : false);
     }
 
     render() {
@@ -99,4 +141,4 @@ export class FlashCard extends LitElement {
     }
 }
 
-customElements.define('krill-flashcard', FlashCard);
+customElements.define('bsharp-flashcard', FlashCard);

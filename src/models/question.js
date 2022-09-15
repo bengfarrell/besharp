@@ -28,10 +28,15 @@ export class Question {
     constructor(chordnotation, possibleinversions) {
         this.chord = new Chord(chordnotation);
         this.notes = this._getNotesWithInversion(this.chord, possibleinversions);
-        if (possibleinversions.length > 0) {
+        if (possibleinversions && possibleinversions.length > 0) {
             this.enforceOrder = true;
         }
-        this.questionText = `${chordnotation} in ${this.inversionLabel} position`;
+        if (possibleinversions === undefined) {
+            this.questionText = chordnotation;
+        }
+        if (possibleinversions) {
+            this.questionText = `${chordnotation} in ${this.inversionLabel} position`;
+        }
     }
 
     isCorrect(inputnotes) {
@@ -40,6 +45,13 @@ export class Question {
 
         this.lastAttempt = uniquenooctave;
         if (uniquenooctave.length < this.notes.length) {
+            // check for partial correct and end attempt early if wrong already
+            for (let c = 0; c < uniquenooctave.length; c++) {
+                if (this.notes.indexOf(uniquenooctave[c]) === -1) {
+                    this.answerText = `Sorry, you played ${this.lastAttempt.join(', ')}. The correct answer is ${this.notes.join(', ')}`;
+                    return false;
+                }
+            }
             return undefined;
         }
 
@@ -60,7 +72,7 @@ export class Question {
     }
 
     _getNotesWithInversion(chord, possibleInversions) {
-        if (possibleInversions.length > 0) {
+        if (possibleInversions && possibleInversions.length > 0) {
             const randominversion = possibleInversions[Math.floor(Math.random() * possibleInversions.length)];
             this.inversionLabel = `the ${randominversion}`;
             switch (randominversion) {

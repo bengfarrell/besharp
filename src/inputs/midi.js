@@ -11,12 +11,25 @@ export class MidiController {
 
     static notes = [];
 
+    static nextQuestionTrigger = undefined;
+
     constructor(host) {
         host.addController(this);
         MidiController.hosts.push(host);
         if (!MidiController.midi) {
             this.refreshConnection();
         }
+    }
+
+    set currentTrigger(notation) {
+        MidiController.nextQuestionTrigger = notation;
+        MidiController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    get currentTrigger() {
+        return MidiController.nextQuestionTrigger;
     }
 
     refreshConnection() {
@@ -44,11 +57,37 @@ export class MidiController {
     }
 
     addListener(callback) {
-        MidiController.noteListeners.push(callback);
+        MidiController.addListener(callback);
+    }
+
+    removeListener(callback) {
+        MidiController.removeListener(callback);
     }
 
     static addListener(callback) {
         MidiController.noteListeners.push(callback);
+    }
+
+    static removeListener(callback) {
+        MidiController.noteListeners.splice(MidiController.noteListeners.indexOf(callback), 1);
+    }
+
+    static onNoteDown(notation, octave) {
+        const indx = MidiController.notes.indexOf(notation + octave);
+        if (indx === -1) {
+            MidiController.notes.push(notation + octave);
+            MidiController.notes = Note.sort(MidiController.notes);
+            MidiController.noteListeners.forEach(cb => cb({ type: 'down', note: notation, octave }));
+        }
+    }
+
+    static onNoteUp(notation, octave) {
+        const indx = MidiController.notes.indexOf(notation + octave);
+        if (indx !== -1) {
+            MidiController.notes.splice(indx, 1);
+            MidiController.notes = Note.sort(MidiController.notes);
+            MidiController.noteListeners.forEach(cb => cb({ type: 'up', note: notation, octave }));
+        }
     }
 
     chooseInput(id) {
@@ -61,28 +100,16 @@ export class MidiController {
                         const note = data[1];
                         const notation = [ ...Note.sharpNotations, ...Note.sharpNotations][(note % Note.sharpNotations.length)];
                         const octave = Math.floor(note / Note.sharpNotations.length) - 1;
-                        const velocity = data[2];
-
-                        const notedata = { note: notation, octave, velocity }
-                        const indx = MidiController.notes.indexOf(notation + octave);
+                        // const velocity = data[2];
                         switch (type) {
                             case 144: // noteOn message
-                                notedata.type = 'on';
-                                if (indx === -1) {
-                                    MidiController.notes.push(notation + octave);
-                                }
-                                MidiController.notes = Note.sort(MidiController.notes);
+                                data.type = 'on';
+                                MidiController.onNoteDown(notation, octave)
                                 break;
                             case 128: // noteOff message
-                                notedata.type = 'off';
-                                if (indx !== -1) {
-                                    MidiController.notes.splice(indx, 1);
-                                }
+                                data.type = 'off';
+                                MidiController.onNoteUp(notation, octave)
                                 break;
-                        }
-
-                        if (notedata.type) {
-                            MidiController.noteListeners.forEach(cb => cb(notedata));
                         }
                     };
 
