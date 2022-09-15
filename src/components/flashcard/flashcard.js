@@ -63,6 +63,12 @@ export class FlashCard extends LitElement {
 
     firstUpdated(_changedProperties) {
         super.firstUpdated(_changedProperties);
+        document.addEventListener("keyup", (event) => {
+            if (event.code === 'Space' && this.mode === App.LIVEPLAY_MODE) {
+                this.nextQuestion();
+                return;
+            }
+        });
         InputsController.addListener( (data) => {
             if (data.type === 'down' && data.note + data.octave === MidiController.nextQuestionTrigger) {
                 this.nextQuestion();
@@ -78,14 +84,22 @@ export class FlashCard extends LitElement {
         });
     }
 
-    onFreePlayListener() {
-        const correct = this.currentQuestion.isCorrect(InputsController.notes);
-        if (correct === false) {
-            this.onIncorrect(false);
+    onFreePlayListener(data) {
+        if (data.type === 'down') {
+            if (InputsController.notes.length === 1 && InputsController.notes[0] === MidiController.nextQuestionTrigger) {
+                return;
+            }
+            const correct = this.currentQuestion.isCorrect(InputsController.notes);
+            if (correct === false) {
+                this.onIncorrect(false);
+            }
         }
     }
 
     onQuizListener() {
+        if (InputsController.notes.length === 1 && InputsController.notes[0] === MidiController.nextQuestionTrigger) {
+            return;
+        }
         this.currentAttempt.push(...InputsController.notes);
         this.currentAttempt = [...new Set(this.currentAttempt)];
         this.currentAttempt = Note.sort(this.currentAttempt);

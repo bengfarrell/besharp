@@ -24,7 +24,7 @@ export const template = (scope) => {
                         <option value="180">3 minutes</option>
                         <option value="300">5 minutes</option>
                         <option value="-1">No timer</option>
-                    </select>
+                    </select><br /><span class="tiny-text">or use the spacebar/midi trigger to advance<span>
                     <h1 id="clock">${scope.transition ? '00:00' : scope.timer.formattedRemainingTime}</h1>`
                             : html`<h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
                 </div>

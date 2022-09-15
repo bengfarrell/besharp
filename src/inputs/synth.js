@@ -22,6 +22,6 @@ export class Synth {
     }
 
     static pressAndRelease(notation, octave, duration, time) {
-        Synth.synth.triggerAttackRelease(note, duration, time);
+        Synth.synth.triggerAttackRelease(notation + octave, duration, time);
     }
 }

@@ -67,9 +67,9 @@ export class App extends LitElement {
                 const answerWithSampleOctave = new Chord(e.question.chord.notation, 4).inversion(e.question.inversion);
                 const time = Synth.now;
                 answerWithSampleOctave.forEach((note, index) => {
-                    const notation = note.substr(0, note.length-1);
+                    const notation = note.substring(0, note.length-1);
                     const octave = note.charAt(note.length-1);
-                    Synth.pressAndRelease(note, octave, '128t', time + index / 2);
+                    Synth.pressAndRelease(notation, octave, '128t', time + index / 2);
                     this._pianoEl.setNoteDown(notation, octave);
                 });
                 this.notes = answerWithSampleOctave;
@@ -89,7 +89,10 @@ export class App extends LitElement {
     }
 
     onIncorrect() {
-        this.shadowRoot.querySelector('bsharp-score').onIncorrect();
+        const score = this.shadowRoot.querySelector('bsharp-score');
+        if (score) {
+            this.shadowRoot.querySelector('bsharp-score').onIncorrect();
+        }
     }
 
     render() {

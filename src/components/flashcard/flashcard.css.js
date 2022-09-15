@@ -82,4 +82,8 @@ export const styles = css`
   #play-controls {
     display: flex;
   }
+  
+  .tiny-text {
+    font-size: 10px;
+  }
 `;

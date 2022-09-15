@@ -30,10 +30,10 @@ export class InputsController {
     }
 
     static updateNotes(e) {
-        InputsController.noteListeners.forEach(cb => cb(e));
         InputsController.notes = [ ...new Set([VoxController.note, ...MidiController.notes, ...VirtualKeyboardController.notes]) ]
             .filter(note => note !== undefined)
             .sort();
+        InputsController.noteListeners.forEach(cb => cb(e));
         InputsController.updateHosts();
     }
 
