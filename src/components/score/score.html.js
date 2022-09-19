@@ -26,8 +26,13 @@ export const template = (scope) => {
     } else if (scope.mode === App.LIVEPLAY_MODE) {
         return html`
             <div class="stats-container">
-                <span>Incorrect</span>
-                <h1>${scope.score.incorrect}</h1>
+                <span>Keys</span>
+                <h1>${parseInt(scope.score.livePlayKeysPercent)}%</h1>
+            </div>
+
+            <div class="stats-container">
+                <span>Vocals</span>
+                <h1>${parseInt(scope.score.livePlayVoxPercent)}%</h1>
             </div>
 
             <div class="stats-container">

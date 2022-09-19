@@ -5,10 +5,19 @@ export class ScoreModelController {
 
     static incorrectAnswers = 0;
 
+    static voxNotes = 0;
+
+    static keyNotes = 0;
+
+    static voxIncorrectNotes = 0;
+
+    static keyIncorrectNotes = 0;
+
     host;
 
     static stats = {
-        chords: {}
+        chords: {},
+        liveplay: {}
     }
 
     constructor(host) {
@@ -29,8 +38,57 @@ export class ScoreModelController {
         return ScoreModelController.incorrectAnswers;
     }
 
+    get livePlayVoxPercent() {
+        if (ScoreModelController.voxNotes === 0) {
+            return 100;
+        }
+        return (ScoreModelController.voxNotes - ScoreModelController.voxIncorrectNotes) / ScoreModelController.voxNotes * 100;
+    }
+
+    get livePlayKeysPercent() {
+        if (ScoreModelController.keyNotes === 0) {
+            return 100;
+        }
+        return (ScoreModelController.keyNotes - ScoreModelController.keyIncorrectNotes) / ScoreModelController.keyNotes * 100;
+    }
+
     get total() {
         return this.incorrect + this.correct;
+    }
+
+    incrementLivePlayNotes(chord, input) {
+        if (input === 'vox') {
+            ScoreModelController.voxNotes ++;
+        } else {
+            ScoreModelController.keyNotes ++;
+        }
+        if (!ScoreModelController.stats.liveplay.chords[chord]) {
+            ScoreModelController.stats.liveplay.chords[chord] = { totalVox: 0, incorrectVox: 0, totalKeys: 0, incorrectKeys: 0 };
+        }
+        if (input === 'vox') {
+            ScoreModelController.stats.liveplay.chords[chord].totalVox ++;
+        } else {
+            ScoreModelController.stats.liveplay.chords[chord].totalKeys ++;
+        }
+    }
+
+    incrementIncorrectLivePlayNotes(chord, input) {
+        if (input === 'vox') {
+            ScoreModelController.voxIncorrectNotes ++;
+        } else {
+            ScoreModelController.keyIncorrectNotes ++;
+        }
+        if (!ScoreModelController.stats.liveplay.chords[chord]) {
+            ScoreModelController.stats.liveplay.chords[chord] = { totalVox: 0, incorrectVox: 0, totalKeys: 0, incorrectKeys: 0 };
+        }s
+        if (input === 'vox') {
+            ScoreModelController.stats.liveplay.chords[chord].incorrectVox ++;
+        } else {
+            ScoreModelController.stats.liveplay.chords[chord].incorrectKeys ++;
+        }
+        ScoreModelController.hosts.forEach(host => {
+            host.requestUpdate();
+        })
     }
 
     incrementCorrect(chord, inversion) {

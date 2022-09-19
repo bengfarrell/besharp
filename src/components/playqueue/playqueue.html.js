@@ -7,7 +7,8 @@ export const template = (scope) => {
     </div>
     <div id="queue">
         ${scope.practicesets.currentSet.map((chord, index) => 
-            html`<span class="chord ${scope.practicesets.currentIndex === index ? 'current' : ''}">${chord}</span>`)}
+            html`<span @click=${() => scope.practicesets.currentIndex = index}
+                    class="chord ${scope.practicesets.currentIndex === index ? 'current' : ''}">${chord}</span>`)}
     </div>
     <hr />
     <h3 id="next">Create a Set</h3>

@@ -11,25 +11,12 @@ export class MidiController {
 
     static notes = [];
 
-    static nextQuestionTrigger = undefined;
-
     constructor(host) {
         host.addController(this);
         MidiController.hosts.push(host);
         if (!MidiController.midi) {
             this.refreshConnection();
         }
-    }
-
-    set currentTrigger(notation) {
-        MidiController.nextQuestionTrigger = notation;
-        MidiController.hosts.forEach(host => {
-            host.requestUpdate();
-        });
-    }
-
-    get currentTrigger() {
-        return MidiController.nextQuestionTrigger;
     }
 
     refreshConnection() {

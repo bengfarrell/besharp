@@ -16,6 +16,8 @@ export const styles = css`
   .stats-container {
     flex: 1;
     margin-left: 15px;
+    flex-direction: column;
+    display: flex;
   }
 
   .stats-container span {
@@ -25,5 +27,12 @@ export const styles = css`
   h1 {
     margin-top: 0;
     margin-bottom: 0;
+  }
+  
+  .piano-icon svg,
+  .mic-icon svg {
+    width: 74px;
+    height: 50px;
+    fill: white;
   }
 `;

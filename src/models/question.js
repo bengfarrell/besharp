@@ -1,4 +1,4 @@
-import { Chord } from '../musictheory';
+import { Chord, Note } from '../musictheory';
 
 export class Question {
     /** chord for question */
@@ -39,10 +39,20 @@ export class Question {
         }
     }
 
+    hasCommonality(inputnotes) {
+        let inCommon = 0;
+        inputnotes.forEach(note => {
+            const n = Note.parseNotation(note);
+            if (this.notes.indexOf(n.notation) !== -1) {
+                inCommon ++;
+            }
+        });
+        return inCommon;
+    }
+
     isCorrect(inputnotes) {
         const nooctave = inputnotes.map(note => note.substr(0, note.length - 1));
         const uniquenooctave = nooctave.filter((v, i, a) => a.indexOf(v) === i);
-
         this.lastAttempt = uniquenooctave;
         if (uniquenooctave.length < this.notes.length) {
             // check for partial correct and end attempt early if wrong already

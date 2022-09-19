@@ -42,6 +42,7 @@ export const styles = css`
     border-style: solid;
     border-color: #acacac;
     color: #acacac;
+    cursor: pointer;
   }
 
   span.chord.current {
