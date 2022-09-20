@@ -17,13 +17,16 @@ export class ScoreModelController {
 
     static stats = {
         chords: {},
-        liveplay: {}
+        liveplay: { chords: {}}
     }
 
     constructor(host) {
         const saveSettings = localStorage.getItem('bsharp-stats');
         if (saveSettings) {
             ScoreModelController.stats = JSON.parse(saveSettings);
+            if (!ScoreModelController.stats.liveplay) {
+                ScoreModelController.stats.liveplay = { chords: {}};
+            }
             console.log('load stats', ScoreModelController.stats)
         }
         (this.host = host).addController(this);
@@ -80,7 +83,7 @@ export class ScoreModelController {
         }
         if (!ScoreModelController.stats.liveplay.chords[chord]) {
             ScoreModelController.stats.liveplay.chords[chord] = { totalVox: 0, incorrectVox: 0, totalKeys: 0, incorrectKeys: 0 };
-        }s
+        }
         if (input === 'vox') {
             ScoreModelController.stats.liveplay.chords[chord].incorrectVox ++;
         } else {

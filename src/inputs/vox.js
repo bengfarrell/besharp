@@ -212,7 +212,7 @@ export class VoxController {
 
     static updateNote(note) {
         const lastNote = VoxController.note ? VoxController.note.substring(0, VoxController.note.length-1) : undefined;
-        if (note !== VoxController.note) {
+        if (note + '4' !== VoxController.note) {
             VoxController.note = note ? note + VoxController.OCTAVE : undefined;
             if (note) {
                 VoxController.listeners.forEach(cb => cb({ type: 'down', note: note, octave: VoxController.OCTAVE }));
