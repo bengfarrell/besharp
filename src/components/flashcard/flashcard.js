@@ -5,7 +5,7 @@ import { Note } from '../../musictheory';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { ScoreModelController } from '../../models/score';
 import { TimerController } from '../../models/timer';
-import { InputsController, MidiController, VirtualKeyboardController, VoxController } from '../../inputs/index.js';
+import { InputsController } from '../../inputs/index.js';
 import { PlayModeEvent } from './playmodeevent';
 import { App } from '../app';
 
@@ -45,6 +45,7 @@ export class FlashCard extends LitElement {
     practiceset = new PracticeSetsController(this);
     inputs = new InputsController(this);
     currentAttempt = [];
+    livePlayAutoAdvance = false;
     livePlayAutoTransitionCounter = 0;
 
     /**
@@ -55,6 +56,22 @@ export class FlashCard extends LitElement {
         this._countDown = val;
         this.timer.resetCountdownTimer(this._countDown);
         this.requestUpdate('countDown');
+    }
+
+    handleTimerDropdown(event) {
+        switch (event.target.value) {
+            case 'no-timer':
+                this.countDown = -1;
+                break;
+
+            case 'smart-advance':
+                this.countDown = -1;
+                break;
+
+            default:
+                this.countDown = Number(event.target.value);
+                break;
+        }
     }
 
     willUpdate(_changedProperties) {
@@ -92,20 +109,29 @@ export class FlashCard extends LitElement {
     onFreePlayListener(data) {
         if (data.type === 'down') {
             this.score.incrementLivePlayNotes(this.currentQuestion.chord, data.input);
-            const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
-            const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
-            const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
-            if (isLikeNextQuestion && !isLikeLastQuestion) {
-                // there is commonality with the next question, but not the last one. We may be trying to transition
-                this.livePlayAutoTransitionCounter++;
-                if (this.livePlayAutoTransitionCounter > FlashCard.NOTES_TO_AUTOMATICALLY_TRANSITION) {
-                    this.goNextQuestion();
+            if (this.livePlayAutoAdvance) {
+                const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
+                const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
+                const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
+                if (isLikeNextQuestion && !isLikeLastQuestion) {
+                    // there is commonality with the next question, but not the last one. We may be trying to transition
+                    this.livePlayAutoTransitionCounter++;
+                    if (this.livePlayAutoTransitionCounter > FlashCard.NOTES_TO_AUTOMATICALLY_TRANSITION) {
+                        this.goNextQuestion();
+                    }
+                } else if ( (isLikeNextQuestion && isLikeLastQuestion && !isLikeCurrentQuestion) || !isLikeCurrentQuestion ) {
+                    // there is commonality with the next and last question, but its not like the current
+                    const event = new Event('incorrect', { bubbles: true, composed: true });
+                    this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
+                    this.dispatchEvent(event);
                 }
-            } else if ( (isLikeNextQuestion && isLikeLastQuestion && !isLikeCurrentQuestion) || !isLikeCurrentQuestion ) {
-                // there is commonality with the next and last question, but its not like the current
-                const event = new Event('incorrect', { bubbles: true, composed: true });
-                this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
-                this.dispatchEvent(event);
+            } else {
+                const correct = this.currentQuestion.isCorrect(InputsController.notes);
+                if (correct === false) {
+                    const event = new Event('incorrect', { bubbles: true, composed: true });
+                    this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
+                    this.dispatchEvent(event);
+                }
             }
         }
     }

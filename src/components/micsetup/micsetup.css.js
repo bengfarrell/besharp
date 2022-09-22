@@ -15,7 +15,7 @@ export const styles = css`
   }
 
   button {
-    width: 50%;
+    width: 100%;
   }
   
   .hidden {

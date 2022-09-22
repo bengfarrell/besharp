@@ -5,12 +5,15 @@ export const styles = css`
     width: calc(100% - 30px);
     padding: 15px;
     display: flex;
-    background-color: #9a9a9a;
+    background-color: var(--darkish);
     color: white;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: var(--kindalight);
   }
 
   :host(.incorrect) {
-    background-color: #e34545;
+    background-color: var(--incorrect-color);
   }
 
   .stats-container {

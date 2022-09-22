@@ -1,26 +1,62 @@
 import { css } from 'lit';
 
 export const styles = css`
-  .panel {
-    background-color: #fafafa;
-    position: relative;
+  :host {
+    color-scheme: dark;
   }
   
+  h1 {
+    margin: 0;
+    border-style: double;
+    border-width: 3px;
+    border-color: var(--light);
+    color: var(--light);
+    padding: 5px;
+    text-align: center;
+    text-decoration: underline;
+  }
+  
+  .panel {
+    background-color: var(--nosodark);
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--kinda-light);
+    color: var(--light);
+    position: relative;
+  }
+
+  .padded-container {
+    padding: 8px;
+  }
+
   .button-container {
-    height: 130px;
+    height: 110px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
   
+  .separator {
+    border-top-style: double;
+    border-top-width: 3px;
+    border-top-color: var(--kindalight);
+  }
+  
   .panels-container {
     overflow-y: auto;
+    background-color: var(--darkish);
+    flex: 1;
   }
-
+  
   .panel-header {
-    background-color: #cacaca;
+    background-color: var(--darkish);
+    color: var(--light);
+    border-bottom-color: var(--kindalight);
+    border-bottom-width: 3px;
+    border-bottom-style: double;
     padding: 4px;
     padding-left: 26px;
+    position: relative;
   }
 
   .panel-content {
@@ -33,19 +69,27 @@ export const styles = css`
     display: inline-block;
   }
   
-  span.toggle-open {
+  button.toggle-open {
+    position: absolute; 
+    margin: 0;
+    width: 25px;
+    height: 25px;
+    min-height: 15px;
+    left: 0px;
+    top: 0px;
+  }
+  
+  button.toggle-open span {
     cursor: pointer;
-    position: absolute;
-    left: 5px;
-    top: 9px;
     display: inline-block;
-    border-top: 8px solid #6a6a6a;
+    border-top: 8px solid var(--lightgreen);
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
+    border-radius: 15px;
     transform: rotate(-90deg);
   }
 
-  .panel.open span.toggle-open {
+  .panel.open button.toggle-open span {
     transform: rotate(0deg);
   }
   
@@ -56,7 +100,7 @@ export const styles = css`
     width: 100%;
   }
   
-  .panel, button {
+  .panel, button, h1 {
     margin-bottom: 8px;
   }
   

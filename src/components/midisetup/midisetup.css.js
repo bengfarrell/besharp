@@ -21,12 +21,12 @@ export const styles = css`
     cursor: pointer;
     padding: 8px;
     border-style: solid;
-    border-color: #9a9a9a;
+    border-color: var(--kindalight);
     border-width: 1px;
   }
 
   li.open {
-    background-color: rgb(220 255 220);
+    background-color: var(--light);
     color: rgb(61, 145, 61);
   }
 
@@ -38,6 +38,7 @@ export const styles = css`
   }
 
   button {
-    width: 50%;
+    width: 100%;
+    height: 40px;
   }
 `;

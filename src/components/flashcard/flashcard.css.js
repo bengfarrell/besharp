@@ -5,6 +5,11 @@ export const styles = css`
     width: 100%;
     height: 100px;
     display: flex;
+    color: var(--lightest);
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--darkish);
+    outline-offset: -20px;
   }
   
   :host([transition]) .question-ui {
@@ -20,14 +25,12 @@ export const styles = css`
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  :host span.question-ui {
-    font-weight: bolder;
+    font-weight: 700;
+    margin-left: 40px;
   }
   
   #progress-bar {
-    background-color: #999999;
+    background-color: var(--darkish);
     width: 100%;
     height: 100%;
     animation: progressBar 3.5s ease-in-out;
@@ -45,12 +48,12 @@ export const styles = css`
   }
 
   #transition-messaging {
-    font-size: 24px;
-    font-weight: bolder;
+    font-size: 36px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3a3a3a;
+    color: var(--lightest);
     width: 100%;
     height: 100%;
   }
@@ -77,6 +80,7 @@ export const styles = css`
   h1 {
     margin-top: 0;
     margin-bottom: 0;
+    font-size: 38px;
   }
 
   #play-controls {
@@ -85,5 +89,10 @@ export const styles = css`
   
   .tiny-text {
     font-size: 10px;
+    font-weight: 100;
+  }
+  
+  select {
+    width: 100px;
   }
 `;

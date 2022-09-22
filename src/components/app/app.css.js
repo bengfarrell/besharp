@@ -13,7 +13,8 @@ export const styles = css`
   }
 
   bsharp-flashcard {
-    margin-bottom: 20px;
+    background-color: var(--dark);
+    height: 160px;
   }
 
   bsharp-score {
@@ -23,22 +24,23 @@ export const styles = css`
   bsharp-sidepanel {
     min-width: 230px;
     width: 230px;
-    height: calc(100% - 30px);
-    padding: 15px;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #eaeaea;
+    background-color: var(--dark);
   }
 
   #no-mode-header {
     height: 100px;
     display: inline-block;
-    margin-bottom: 5px;
-    padding: 15px;
-    width: calc(100% - 30px);
-  }
-
-  #main-container {
-    padding: 5px;
+    padding: 30px;
+    width: calc(100% - 60px);
+    background-color: var(--dark);
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--darkish);
+    outline-offset: -20px;
+    color: var(--light);
+    font-weight: 100;
   }
 `;

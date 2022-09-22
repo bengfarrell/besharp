@@ -21,24 +21,30 @@ const panels = [
         id: 3,
         name: 'Music Theory',
         el: html`<bsharp-theoryoptions></bsharp-theoryoptions>`,
-        open: true,
+        open: false,
     }
 ]
 
 export const template = (scope) => {
     return html`
-        <div class="button-container">
-            ${scope.started ? html`<button @click=${scope.handleStopClick}>Stop</button>` : html`
-                <button @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>
-            </button>
-            <button @click=${() => scope.handleStartClick(App.LIVEPLAY_MODE)}>Start Live</button>`}
+        <div class="padded-container">
+            <h1>Be#Sharp</h1>
+            <div class="button-container">
+                ${scope.started ? html`<button class="large" @click=${scope.handleStopClick}>Stop</button>` : html`
+                    <button class="large" @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>
+                </button>
+                <button class="large" @click=${() => scope.handleStartClick(App.LIVEPLAY_MODE)}>Start Live</button>`}
+            </div>
         </div>
-        <div class="panels-container">
+        <div class="separator"></div>
+        <div class="panels-container padded-container">
         ${panels.map((panel) => html`
             <div class="panel ${panel.open ? 'open': ''}">
                 <div class="panel-header">
                     <span>${panel.name}</span>
-                    <span class="toggle-open" @click=${() => scope.togglePanel(panel)}></span>
+                    <button class="toggle-open invisible" @click=${() => scope.togglePanel(panel)}>
+                        <span></span>
+                    </button>
                 </div>
                 <div class="panel-content">
                     ${panel.el}

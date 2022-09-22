@@ -12,6 +12,7 @@ export const styles = css`
   
   #queue {
     margin-top: 15px;
+    display: flex;
   }
   
   hr {
@@ -21,33 +22,39 @@ export const styles = css`
     margin-top: 25px;
   }
   
-  #set-generation {
-    display: flex;
-    align-items: center;
-  }
-  
-  #set-generation textarea {
-    height: 75px;
-    margin-left: 15px;
-  }
-
-  #set-generation button {
-    margin-right: 15px;
-    height: 50px;
-  }
-  
   span.chord {
     padding: 5px;
     margin: 2px;
+    min-width: 40px;
+    height: 34px;
+    display: flex;
     border-style: solid;
-    border-color: #acacac;
-    color: #acacac;
+    border-color: var(--green);
+    color: var(--green);
     cursor: pointer;
+    align-items: center;
+    text-align: center;
   }
 
   span.chord.current {
-    background-color: #6a6a6a;
-    border-color: white;
-    color: white
+    background-color: var(--darkish);
+    border-color: var(--darkish);
+    color: var(--lightest);
+  }
+
+  button#refresh {
+    width: 50px;
+    height: 50px;
+  }
+  button#refresh svg {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    fill: var(--lightest);
+  }
+  
+  textarea {
+    margin-top: 10px;
+    height: 50px;
   }
 `;

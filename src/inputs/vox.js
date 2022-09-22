@@ -135,12 +135,9 @@ export class VoxController {
         const dataArray = new Uint8Array(bufferLength);
         VoxController.analyser.getByteTimeDomainData(dataArray);
 
-        ctx.fillStyle = 'rgb(200, 200, 200)';
-        ctx.fillRect(0, 0, width, height);
-
+        ctx.clearRect(0, 0, width, height);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgb(0, 0, 0)';
-
+        ctx.strokeStyle = 'rgb(200, 200, 200)';
         ctx.beginPath();
 
         const sliceWidth = width * 1.0 / bufferLength;
