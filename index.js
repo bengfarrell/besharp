@@ -16,7 +16,7 @@ const t$2=window.ShadowRoot&&(void 0===window.ShadyCSS||window.ShadyCSS.nativeSh
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-var t$1;const i$1=globalThis.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,e$1=`lit$${(Math.random()+"").slice(9)}$`,o$2="?"+e$1,n$1=`<${o$2}>`,l$1=document,h=(t="")=>l$1.createComment(t),r=t=>null===t||"object"!=typeof t&&"function"!=typeof t,d=Array.isArray,u=t=>{var i;return d(t)||"function"==typeof(null===(i=t)||void 0===i?void 0:i[Symbol.iterator])},c=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,v=/-->/g,a=/>/g,f=/>|[ 	\n\r](?:([^\s"'>=/]+)([ 	\n\r]*=[ 	\n\r]*(?:[^ 	\n\r"'`<>=]|("|')|))|$)/g,_=/'/g,m=/"/g,g=/^(?:script|style|textarea|title)$/i,p=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),$=p(1),b=Symbol.for("lit-noChange"),w=Symbol.for("lit-nothing"),T=new WeakMap,x=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new N(i.insertBefore(h(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l},A=l$1.createTreeWalker(l$1,129,null,!1),C=(t,i)=>{const o=t.length-1,l=[];let h,r=2===i?"<svg>":"",d=c;for(let i=0;i<o;i++){const s=t[i];let o,u,p=-1,$=0;for(;$<s.length&&(d.lastIndex=$,u=d.exec(s),null!==u);)$=d.lastIndex,d===c?"!--"===u[1]?d=v:void 0!==u[1]?d=a:void 0!==u[2]?(g.test(u[2])&&(h=RegExp("</"+u[2],"g")),d=f):void 0!==u[3]&&(d=f):d===f?">"===u[0]?(d=null!=h?h:c,p=-1):void 0===u[1]?p=-2:(p=d.lastIndex-u[2].length,o=u[1],d=void 0===u[3]?f:'"'===u[3]?m:_):d===m||d===_?d=f:d===v||d===a?d=c:(d=f,h=void 0);const y=d===f&&t[i+1].startsWith("/>")?" ":"";r+=d===c?s+n$1:p>=0?(l.push(o),s.slice(0,p)+"$lit$"+s.slice(p)+e$1+y):s+e$1+(-2===p?(l.push(void 0),i):y);}const u=r+(t[o]||"<?>")+(2===i?"</svg>":"");if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return [void 0!==s$1?s$1.createHTML(u):u,l]};class E{constructor({strings:t,_$litType$:s},n){let l;this.parts=[];let r=0,d=0;const u=t.length-1,c=this.parts,[v,a]=C(t,s);if(this.el=E.createElement(v,n),A.currentNode=this.el.content,2===s){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(l=A.nextNode())&&c.length<u;){if(1===l.nodeType){if(l.hasAttributes()){const t=[];for(const i of l.getAttributeNames())if(i.endsWith("$lit$")||i.startsWith(e$1)){const s=a[d++];if(t.push(i),void 0!==s){const t=l.getAttribute(s.toLowerCase()+"$lit$").split(e$1),i=/([.?@])?(.*)/.exec(s);c.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?M:"?"===i[1]?H:"@"===i[1]?I:S});}else c.push({type:6,index:r});}for(const i of t)l.removeAttribute(i);}if(g.test(l.tagName)){const t=l.textContent.split(e$1),s=t.length-1;if(s>0){l.textContent=i$1?i$1.emptyScript:"";for(let i=0;i<s;i++)l.append(t[i],h()),A.nextNode(),c.push({type:2,index:++r});l.append(t[s],h());}}}else if(8===l.nodeType)if(l.data===o$2)c.push({type:2,index:r});else {let t=-1;for(;-1!==(t=l.data.indexOf(e$1,t+1));)c.push({type:7,index:r}),t+=e$1.length-1;}r++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function P(t,i,s=t,e){var o,n,l,h;if(i===b)return i;let d=void 0!==e?null===(o=s._$Cl)||void 0===o?void 0:o[e]:s._$Cu;const u=r(i)?void 0:i._$litDirective$;return (null==d?void 0:d.constructor)!==u&&(null===(n=null==d?void 0:d._$AO)||void 0===n||n.call(d,!1),void 0===u?d=void 0:(d=new u(t),d._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Cl)&&void 0!==l?l:h._$Cl=[])[e]=d:s._$Cu=d),void 0!==d&&(i=P(t,d._$AS(t,i.values),d,e)),i}class V{constructor(t,i){this.v=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}p(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:l$1).importNode(s,!0);A.currentNode=o;let n=A.nextNode(),h=0,r=0,d=e[0];for(;void 0!==d;){if(h===d.index){let i;2===d.type?i=new N(n,n.nextSibling,this,t):1===d.type?i=new d.ctor(n,d.name,d.strings,this,t):6===d.type&&(i=new L(n,this,t)),this.v.push(i),d=e[++r];}h!==(null==d?void 0:d.index)&&(n=A.nextNode(),h++);}return o}m(t){let i=0;for(const s of this.v)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class N{constructor(t,i,s,e){var o;this.type=2,this._$AH=w,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cg=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cg}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=P(this,t,i),r(t)?t===w||null==t||""===t?(this._$AH!==w&&this._$AR(),this._$AH=w):t!==this._$AH&&t!==b&&this.$(t):void 0!==t._$litType$?this.T(t):void 0!==t.nodeType?this.k(t):u(t)?this.S(t):this.$(t);}A(t,i=this._$AB){return this._$AA.parentNode.insertBefore(t,i)}k(t){this._$AH!==t&&(this._$AR(),this._$AH=this.A(t));}$(t){this._$AH!==w&&r(this._$AH)?this._$AA.nextSibling.data=t:this.k(l$1.createTextNode(t)),this._$AH=t;}T(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=E.createElement(e.h,this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.m(s);else {const t=new V(o,this),i=t.p(this.options);t.m(s),this.k(i),this._$AH=t;}}_$AC(t){let i=T.get(t.strings);return void 0===i&&T.set(t.strings,i=new E(t)),i}S(t){d(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new N(this.A(h()),this.A(h()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cg=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class S{constructor(t,i,s,e,o){this.type=1,this._$AH=w,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=w;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=P(this,t,i,0),n=!r(t)||t!==this._$AH&&t!==b,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=P(this,e[s+l],i,l),h===b&&(h=this._$AH[l]),n||(n=!r(h)||h!==this._$AH[l]),h===w?t=w:t!==w&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.C(t);}C(t){t===w?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class M extends S{constructor(){super(...arguments),this.type=3;}C(t){this.element[this.name]=t===w?void 0:t;}}const k=i$1?i$1.emptyScript:"";class H extends S{constructor(){super(...arguments),this.type=4;}C(t){t&&t!==w?this.element.setAttribute(this.name,k):this.element.removeAttribute(this.name);}}class I extends S{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=P(this,t,i,0))&&void 0!==s?s:w)===b)return;const e=this._$AH,o=t===w&&e!==w||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==w&&(e===w||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class L{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){P(this,t);}}const z=window.litHtmlPolyfillSupport;null==z||z(E,N),(null!==(t$1=globalThis.litHtmlVersions)&&void 0!==t$1?t$1:globalThis.litHtmlVersions=[]).push("2.2.0");
+var t$1;const i$1=globalThis.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,e$1=`lit$${(Math.random()+"").slice(9)}$`,o$2="?"+e$1,n$1=`<${o$2}>`,l$1=document,h=(t="")=>l$1.createComment(t),r=t=>null===t||"object"!=typeof t&&"function"!=typeof t,d=Array.isArray,u=t=>{var i;return d(t)||"function"==typeof(null===(i=t)||void 0===i?void 0:i[Symbol.iterator])},c=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,v=/-->/g,a=/>/g,f=/>|[ 	\n\r](?:([^\s"'>=/]+)([ 	\n\r]*=[ 	\n\r]*(?:[^ 	\n\r"'`<>=]|("|')|))|$)/g,_=/'/g,m=/"/g,g=/^(?:script|style|textarea|title)$/i,p=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),$=p(1),y=p(2),b=Symbol.for("lit-noChange"),w=Symbol.for("lit-nothing"),T=new WeakMap,x=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new N(i.insertBefore(h(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l},A=l$1.createTreeWalker(l$1,129,null,!1),C=(t,i)=>{const o=t.length-1,l=[];let h,r=2===i?"<svg>":"",d=c;for(let i=0;i<o;i++){const s=t[i];let o,u,p=-1,$=0;for(;$<s.length&&(d.lastIndex=$,u=d.exec(s),null!==u);)$=d.lastIndex,d===c?"!--"===u[1]?d=v:void 0!==u[1]?d=a:void 0!==u[2]?(g.test(u[2])&&(h=RegExp("</"+u[2],"g")),d=f):void 0!==u[3]&&(d=f):d===f?">"===u[0]?(d=null!=h?h:c,p=-1):void 0===u[1]?p=-2:(p=d.lastIndex-u[2].length,o=u[1],d=void 0===u[3]?f:'"'===u[3]?m:_):d===m||d===_?d=f:d===v||d===a?d=c:(d=f,h=void 0);const y=d===f&&t[i+1].startsWith("/>")?" ":"";r+=d===c?s+n$1:p>=0?(l.push(o),s.slice(0,p)+"$lit$"+s.slice(p)+e$1+y):s+e$1+(-2===p?(l.push(void 0),i):y);}const u=r+(t[o]||"<?>")+(2===i?"</svg>":"");if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return [void 0!==s$1?s$1.createHTML(u):u,l]};class E{constructor({strings:t,_$litType$:s},n){let l;this.parts=[];let r=0,d=0;const u=t.length-1,c=this.parts,[v,a]=C(t,s);if(this.el=E.createElement(v,n),A.currentNode=this.el.content,2===s){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(l=A.nextNode())&&c.length<u;){if(1===l.nodeType){if(l.hasAttributes()){const t=[];for(const i of l.getAttributeNames())if(i.endsWith("$lit$")||i.startsWith(e$1)){const s=a[d++];if(t.push(i),void 0!==s){const t=l.getAttribute(s.toLowerCase()+"$lit$").split(e$1),i=/([.?@])?(.*)/.exec(s);c.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?M:"?"===i[1]?H:"@"===i[1]?I:S});}else c.push({type:6,index:r});}for(const i of t)l.removeAttribute(i);}if(g.test(l.tagName)){const t=l.textContent.split(e$1),s=t.length-1;if(s>0){l.textContent=i$1?i$1.emptyScript:"";for(let i=0;i<s;i++)l.append(t[i],h()),A.nextNode(),c.push({type:2,index:++r});l.append(t[s],h());}}}else if(8===l.nodeType)if(l.data===o$2)c.push({type:2,index:r});else {let t=-1;for(;-1!==(t=l.data.indexOf(e$1,t+1));)c.push({type:7,index:r}),t+=e$1.length-1;}r++;}}static createElement(t,i){const s=l$1.createElement("template");return s.innerHTML=t,s}}function P(t,i,s=t,e){var o,n,l,h;if(i===b)return i;let d=void 0!==e?null===(o=s._$Cl)||void 0===o?void 0:o[e]:s._$Cu;const u=r(i)?void 0:i._$litDirective$;return (null==d?void 0:d.constructor)!==u&&(null===(n=null==d?void 0:d._$AO)||void 0===n||n.call(d,!1),void 0===u?d=void 0:(d=new u(t),d._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Cl)&&void 0!==l?l:h._$Cl=[])[e]=d:s._$Cu=d),void 0!==d&&(i=P(t,d._$AS(t,i.values),d,e)),i}class V{constructor(t,i){this.v=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}p(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:l$1).importNode(s,!0);A.currentNode=o;let n=A.nextNode(),h=0,r=0,d=e[0];for(;void 0!==d;){if(h===d.index){let i;2===d.type?i=new N(n,n.nextSibling,this,t):1===d.type?i=new d.ctor(n,d.name,d.strings,this,t):6===d.type&&(i=new L(n,this,t)),this.v.push(i),d=e[++r];}h!==(null==d?void 0:d.index)&&(n=A.nextNode(),h++);}return o}m(t){let i=0;for(const s of this.v)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class N{constructor(t,i,s,e){var o;this.type=2,this._$AH=w,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cg=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cg}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===t.nodeType&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=P(this,t,i),r(t)?t===w||null==t||""===t?(this._$AH!==w&&this._$AR(),this._$AH=w):t!==this._$AH&&t!==b&&this.$(t):void 0!==t._$litType$?this.T(t):void 0!==t.nodeType?this.k(t):u(t)?this.S(t):this.$(t);}A(t,i=this._$AB){return this._$AA.parentNode.insertBefore(t,i)}k(t){this._$AH!==t&&(this._$AR(),this._$AH=this.A(t));}$(t){this._$AH!==w&&r(this._$AH)?this._$AA.nextSibling.data=t:this.k(l$1.createTextNode(t)),this._$AH=t;}T(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=E.createElement(e.h,this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.m(s);else {const t=new V(o,this),i=t.p(this.options);t.m(s),this.k(i),this._$AH=t;}}_$AC(t){let i=T.get(t.strings);return void 0===i&&T.set(t.strings,i=new E(t)),i}S(t){d(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new N(this.A(h()),this.A(h()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cg=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class S{constructor(t,i,s,e,o){this.type=1,this._$AH=w,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=w;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=P(this,t,i,0),n=!r(t)||t!==this._$AH&&t!==b,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=P(this,e[s+l],i,l),h===b&&(h=this._$AH[l]),n||(n=!r(h)||h!==this._$AH[l]),h===w?t=w:t!==w&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.C(t);}C(t){t===w?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class M extends S{constructor(){super(...arguments),this.type=3;}C(t){this.element[this.name]=t===w?void 0:t;}}const k=i$1?i$1.emptyScript:"";class H extends S{constructor(){super(...arguments),this.type=4;}C(t){t&&t!==w?this.element.setAttribute(this.name,k):this.element.removeAttribute(this.name);}}class I extends S{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=P(this,t,i,0))&&void 0!==s?s:w)===b)return;const e=this._$AH,o=t===w&&e!==w||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==w&&(e===w||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class L{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){P(this,t);}}const z=window.litHtmlPolyfillSupport;null==z||z(E,N),(null!==(t$1=globalThis.litHtmlVersions)&&void 0!==t$1?t$1:globalThis.litHtmlVersions=[]).push("2.2.0");
 
 /**
  * @license
@@ -39,7 +39,7 @@ const template$7 = (scope) => {
                 <div class="stats-container" id="clock-container">
                     <span>Timer:</span>
                     ${scope.mode === 'liveplay' ? $`
-                    <select @change=${(event) => scope.countDown = Number(event.target.value)}>
+                    <select @change=${scope.handleTimerDropdown}>
                         <option value="10">10 seconds</option>
                         <option selected value="15">15 seconds</option>
                         <option value="30">30 seconds</option>
@@ -49,8 +49,9 @@ const template$7 = (scope) => {
                         <option value="120">2 minutes</option>
                         <option value="180">3 minutes</option>
                         <option value="300">5 minutes</option>
-                        <option value="-1">No timer</option>
-                    </select><br /><span class="tiny-text">or use the spacebar/midi trigger to advance<span>
+                        <option value="no-timer">No timer, I want to use the spacebar</option>
+                        <option value="smart-advance">Auto-detect and advance when I play the next chord</option>
+                    </select><br /><span class="tiny-text">or use the spacebar to advance manually<span>
                     <h1 id="clock">${scope.transition ? '00:00' : scope.timer.formattedRemainingTime}</h1>`
                             : $`<h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
                 </div>
@@ -66,11 +67,16 @@ const template$7 = (scope) => {
     }
 };
 
-const styles$8 = r$2`
+const styles$a = r$2`
   :host {
     width: 100%;
     height: 100px;
     display: flex;
+    color: var(--lightest);
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--darkish);
+    outline-offset: -20px;
   }
   
   :host([transition]) .question-ui {
@@ -86,14 +92,12 @@ const styles$8 = r$2`
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  :host span.question-ui {
-    font-weight: bolder;
+    font-weight: 700;
+    margin-left: 40px;
   }
   
   #progress-bar {
-    background-color: #999999;
+    background-color: var(--darkish);
     width: 100%;
     height: 100%;
     animation: progressBar 3.5s ease-in-out;
@@ -111,12 +115,12 @@ const styles$8 = r$2`
   }
 
   #transition-messaging {
-    font-size: 24px;
-    font-weight: bolder;
+    font-size: 36px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3a3a3a;
+    color: var(--lightest);
     width: 100%;
     height: 100%;
   }
@@ -143,6 +147,7 @@ const styles$8 = r$2`
   h1 {
     margin-top: 0;
     margin-bottom: 0;
+    font-size: 38px;
   }
 
   #play-controls {
@@ -151,6 +156,11 @@ const styles$8 = r$2`
   
   .tiny-text {
     font-size: 10px;
+    font-weight: 100;
+  }
+  
+  select {
+    width: 100px;
   }
 `;
 
@@ -21017,12 +21027,9 @@ class VoxController {
         const dataArray = new Uint8Array(bufferLength);
         VoxController.analyser.getByteTimeDomainData(dataArray);
 
-        ctx.fillStyle = 'rgb(200, 200, 200)';
-        ctx.fillRect(0, 0, width, height);
-
+        ctx.clearRect(0, 0, width, height);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgb(0, 0, 0)';
-
+        ctx.strokeStyle = 'rgb(200, 200, 200)';
         ctx.beginPath();
 
         const sliceWidth = width * 1.0 / bufferLength;
@@ -21291,7 +21298,7 @@ class PlayModeEvent extends Event {
 }
 
 class FlashCard extends s {
-    static get styles() { return [ styles$8 ] }
+    static get styles() { return [ styles$a ] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 
@@ -21326,6 +21333,7 @@ class FlashCard extends s {
     practiceset = new PracticeSetsController(this);
     inputs = new InputsController(this);
     currentAttempt = [];
+    livePlayAutoAdvance = false;
     livePlayAutoTransitionCounter = 0;
 
     /**
@@ -21336,6 +21344,22 @@ class FlashCard extends s {
         this._countDown = val;
         this.timer.resetCountdownTimer(this._countDown);
         this.requestUpdate('countDown');
+    }
+
+    handleTimerDropdown(event) {
+        switch (event.target.value) {
+            case 'no-timer':
+                this.countDown = -1;
+                break;
+
+            case 'smart-advance':
+                this.countDown = -1;
+                break;
+
+            default:
+                this.countDown = Number(event.target.value);
+                break;
+        }
     }
 
     willUpdate(_changedProperties) {
@@ -21373,20 +21397,29 @@ class FlashCard extends s {
     onFreePlayListener(data) {
         if (data.type === 'down') {
             this.score.incrementLivePlayNotes(this.currentQuestion.chord, data.input);
-            const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
-            const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
-            const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
-            if (isLikeNextQuestion && !isLikeLastQuestion) {
-                // there is commonality with the next question, but not the last one. We may be trying to transition
-                this.livePlayAutoTransitionCounter++;
-                if (this.livePlayAutoTransitionCounter > FlashCard.NOTES_TO_AUTOMATICALLY_TRANSITION) {
-                    this.goNextQuestion();
+            if (this.livePlayAutoAdvance) {
+                const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
+                const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
+                const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
+                if (isLikeNextQuestion && !isLikeLastQuestion) {
+                    // there is commonality with the next question, but not the last one. We may be trying to transition
+                    this.livePlayAutoTransitionCounter++;
+                    if (this.livePlayAutoTransitionCounter > FlashCard.NOTES_TO_AUTOMATICALLY_TRANSITION) {
+                        this.goNextQuestion();
+                    }
+                } else if ( (isLikeNextQuestion && isLikeLastQuestion && !isLikeCurrentQuestion) || !isLikeCurrentQuestion ) {
+                    // there is commonality with the next and last question, but its not like the current
+                    const event = new Event('incorrect', { bubbles: true, composed: true });
+                    this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
+                    this.dispatchEvent(event);
                 }
-            } else if ( (isLikeNextQuestion && isLikeLastQuestion && !isLikeCurrentQuestion) || !isLikeCurrentQuestion ) {
-                // there is commonality with the next and last question, but its not like the current
-                const event = new Event('incorrect', { bubbles: true, composed: true });
-                this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
-                this.dispatchEvent(event);
+            } else {
+                const correct = this.currentQuestion.isCorrect(InputsController.notes);
+                if (correct === false) {
+                    const event = new Event('incorrect', { bubbles: true, composed: true });
+                    this.score.incrementIncorrectLivePlayNotes(this.currentQuestion.chord, data.input);
+                    this.dispatchEvent(event);
+                }
             }
         }
     }
@@ -21500,17 +21533,20 @@ const template$6 = (scope) => {
     }
 };
 
-const styles$7 = r$2`
+const styles$9 = r$2`
   :host {
     width: calc(100% - 30px);
     padding: 15px;
     display: flex;
-    background-color: #9a9a9a;
+    background-color: var(--darkish);
     color: white;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: var(--kindalight);
   }
 
   :host(.incorrect) {
-    background-color: #e34545;
+    background-color: var(--incorrect-color);
   }
 
   .stats-container {
@@ -21538,7 +21574,7 @@ const styles$7 = r$2`
 `;
 
 class Score extends s {
-    static get styles() { return [ styles$7 ] }
+    static get styles() { return [ styles$9 ] }
 
     static properties = {
         mode: { type: String },
@@ -21565,7 +21601,7 @@ const template$5 = (scope) => {
     if (scope.midi.inputs.length === 0) {
         return $`<span>Please connect a midi device <i>(works in Chrome/Edge only)</i></span>
         <br />
-        <button @click=${scope.handleMidiRefresh}>refresh</button>`;
+        <button @click=${scope.handleMidiRefresh}>Refresh</button>`;
     }
 
     return $`
@@ -21573,10 +21609,10 @@ const template$5 = (scope) => {
         $`<li @click=${scope.handleInputClick} data-id=${input.id} class=${input.connection}>${input.name}</li>`)}
         </ul>
     <br />
-    <button @click=${scope.handleMidiRefresh}>refresh</button>`;
+    <button @click=${scope.handleMidiRefresh}>Refresh</button>`;
 };
 
-const styles$6 = r$2`
+const styles$8 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -21597,12 +21633,12 @@ const styles$6 = r$2`
     cursor: pointer;
     padding: 8px;
     border-style: solid;
-    border-color: #9a9a9a;
+    border-color: var(--kindalight);
     border-width: 1px;
   }
 
   li.open {
-    background-color: rgb(220 255 220);
+    background-color: var(--light);
     color: rgb(61, 145, 61);
   }
 
@@ -21614,23 +21650,51 @@ const styles$6 = r$2`
   }
 
   button {
-    width: 50%;
+    width: 100%;
+    height: 40px;
   }
 `;
 
-const styles$5 = r$2`
+const styles$7 = r$2`
   button {
-    cursor: pointer;
-    font-weight: bold;
-    color: #eaeaea;
+    font-family: museo-sans, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--lightest);
     border: none;
+    border-radius: 5px;
     padding: 5px;
-    background: #8a8a8a;
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--lightgreen);
+    outline-offset: -8px;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 30%);
+    background: var(--action-gradient);
+    height: 40px;
+  }
+  
+  button.has-icon {
     outline: none;
   }
 
+  button.invisible {
+    background: none;
+    outline: none;
+  }
+  
+  button.large {
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   button:hover {
-    background: #696969;
+    background: var(--action-hover);
+  }
+
+  button.invisible:hover {
+    background: none;
   }
 
   button:active {
@@ -21640,7 +21704,7 @@ const styles$5 = r$2`
 `;
 
 class MidiSetup extends s {
-    static get styles() { return [ styles$6, styles$5 ] }
+    static get styles() { return [ styles$8, styles$7 ] }
 
     midi = new MidiController(this);
 
@@ -21673,10 +21737,10 @@ const template$4 = (scope) => {
     return $`<span>Sing the input?</span>
         <canvas width="200" height="50"}></canvas>
         <h3 id="note">${VoxController.note || ' - '}</h3>
-        <button @click=${VoxController.toggleMicrophone}>${VoxController.active ? $`stop microphone` : $`start microphone`}</button>`;
+        <button @click=${VoxController.toggleMicrophone}>${VoxController.active ? $`Stop Microphone` : $`Start Microphone`}</button>`;
 };
 
-const styles$4 = r$2`
+const styles$6 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -21691,7 +21755,7 @@ const styles$4 = r$2`
   }
 
   button {
-    width: 50%;
+    width: 100%;
   }
   
   .hidden {
@@ -21700,7 +21764,7 @@ const styles$4 = r$2`
 `;
 
 class MicSetup extends s {
-    static get styles() { return [ styles$4, styles$5 ] }
+    static get styles() { return [ styles$6, styles$7 ] }
 
     vox = new VoxController(this);
 
@@ -21779,34 +21843,14 @@ const renderOptions = (scope, opts) => {
     })}`;
 };
 
-const styles$3 = r$2`
+const styles$5 = r$2`
     :host {
-      font-family: Sans, Arial;
       font-size: 12px;
       display: flex;
       flex-direction: column;
       width: 100%;
     }
-  
-    .tab-container {
-      width: calc(100% - 10px);
-      display: flex;
-      background-color: #bababa;
-      padding: 8px;
-    }
 
-    .tab-container button {
-      flex: 1;
-      border: none;
-      background-color: white;
-      cursor: pointer;
-    }
-
-    .tab-container button.active {
-      background-color: #9a9a9a;
-      color: white;
-    }
-  
     div.section > label {
       text-transform: uppercase;
       font-weight: bolder;
@@ -21816,24 +21860,20 @@ const styles$3 = r$2`
       margin-top: 15px;
       display: inline-block;
     }
-    
-    textarea {
-      width: 100%;
-      margin-top: 10px;
-    }
-  
-    .current-set {
-      font-size: 10px;
-      font-weight: bold;
-    }
   
     div.section:first-child > label {
       margin-top: 0;
     }
+
+    input[type="checkbox"] {
+      accent-color: var(--green);
+    }
+  
+    
 `;
 
 class TheoryOptions extends s {
-    static get styles() { return [ styles$3 ] }
+    static get styles() { return [ styles$5 ] }
 
     sets = new PracticeSetsController(this);
 
@@ -21865,24 +21905,30 @@ const panels = [
         id: 3,
         name: 'Music Theory',
         el: $`<bsharp-theoryoptions></bsharp-theoryoptions>`,
-        open: true,
+        open: false,
     }
 ];
 
 const template$2 = (scope) => {
     return $`
-        <div class="button-container">
-            ${scope.started ? $`<button @click=${scope.handleStopClick}>Stop</button>` : $`
-                <button @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>
-            </button>
-            <button @click=${() => scope.handleStartClick(App.LIVEPLAY_MODE)}>Start Live</button>`}
+        <div class="padded-container">
+            <h1>Be#Sharp</h1>
+            <div class="button-container">
+                ${scope.started ? $`<button class="large" @click=${scope.handleStopClick}>Stop</button>` : $`
+                    <button class="large" @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>
+                </button>
+                <button class="large" @click=${() => scope.handleStartClick(App.LIVEPLAY_MODE)}>Start Live</button>`}
+            </div>
         </div>
-        <div class="panels-container">
+        <div class="separator"></div>
+        <div class="panels-container padded-container">
         ${panels.map((panel) => $`
             <div class="panel ${panel.open ? 'open': ''}">
                 <div class="panel-header">
                     <span>${panel.name}</span>
-                    <span class="toggle-open" @click=${() => scope.togglePanel(panel)}></span>
+                    <button class="toggle-open invisible" @click=${() => scope.togglePanel(panel)}>
+                        <span></span>
+                    </button>
                 </div>
                 <div class="panel-content">
                     ${panel.el}
@@ -21892,27 +21938,63 @@ const template$2 = (scope) => {
         </div>`;
 };
 
-const styles$2 = r$2`
-  .panel {
-    background-color: #fafafa;
-    position: relative;
+const styles$4 = r$2`
+  :host {
+    color-scheme: dark;
   }
   
+  h1 {
+    margin: 0;
+    border-style: double;
+    border-width: 3px;
+    border-color: var(--light);
+    color: var(--light);
+    padding: 5px;
+    text-align: center;
+    text-decoration: underline;
+  }
+  
+  .panel {
+    background-color: var(--nosodark);
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--kinda-light);
+    color: var(--light);
+    position: relative;
+  }
+
+  .padded-container {
+    padding: 8px;
+  }
+
   .button-container {
-    height: 130px;
+    height: 110px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
   
+  .separator {
+    border-top-style: double;
+    border-top-width: 3px;
+    border-top-color: var(--kindalight);
+  }
+  
   .panels-container {
     overflow-y: auto;
+    background-color: var(--darkish);
+    flex: 1;
   }
-
+  
   .panel-header {
-    background-color: #cacaca;
+    background-color: var(--darkish);
+    color: var(--light);
+    border-bottom-color: var(--kindalight);
+    border-bottom-width: 3px;
+    border-bottom-style: double;
     padding: 4px;
     padding-left: 26px;
+    position: relative;
   }
 
   .panel-content {
@@ -21925,19 +22007,27 @@ const styles$2 = r$2`
     display: inline-block;
   }
   
-  span.toggle-open {
+  button.toggle-open {
+    position: absolute; 
+    margin: 0;
+    width: 25px;
+    height: 25px;
+    min-height: 15px;
+    left: 0px;
+    top: 0px;
+  }
+  
+  button.toggle-open span {
     cursor: pointer;
-    position: absolute;
-    left: 5px;
-    top: 9px;
     display: inline-block;
-    border-top: 8px solid #6a6a6a;
+    border-top: 8px solid var(--lightgreen);
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
+    border-radius: 15px;
     transform: rotate(-90deg);
   }
 
-  .panel.open span.toggle-open {
+  .panel.open button.toggle-open span {
     transform: rotate(0deg);
   }
   
@@ -21948,7 +22038,7 @@ const styles$2 = r$2`
     width: 100%;
   }
   
-  .panel, button {
+  .panel, button, h1 {
     margin-bottom: 8px;
   }
   
@@ -21957,12 +22047,20 @@ const styles$2 = r$2`
   }
 `;
 
+const styles$3 = r$2`
+  h1 {
+    font-family: rhythm-two-solid, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+`;
+
 class SidePanel extends s {
 
     mode = App.QUIZ_MODE;
     timer = new TimerController(this);
 
-    static get styles() { return [ styles$2, styles$5 ] }
+    static get styles() { return [ styles$4, styles$7, styles$3 ] }
 
     static properties = {
         started: { type: Boolean },
@@ -21998,26 +22096,26 @@ customElements.define('bsharp-sidepanel', SidePanel);
 const START_EVENT = 'start';
 const STOP_EVENT = 'stop';
 
+// Refresh by Gregor Cresnar from https://thenounproject.com/browse/icons/term/refresh Noun Project
+const RefreshIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="m557.2 98.168c43.57 53.664 65.434 121.72 61.273 190.72-4.1641 68.996-34.047 133.93-83.754 181.96-49.707 48.039-115.62 75.695-184.72 77.5v-67.199c51.242-1.875 100.01-22.5 137.04-57.965 37.035-35.461 59.758-83.285 63.855-134.4 4.0977-51.109-10.719-101.95-41.633-142.85l-60.984 60.984c-3.4141 3.418-8.0469 5.3398-12.879 5.3398-4.832 0-9.4648-1.918-12.879-5.3359-3.4141-3.418-5.3281-8.0547-5.3242-12.887v-157.64c0-6.6836 2.6562-13.09 7.3828-17.816 4.7266-4.7266 11.133-7.3828 17.816-7.3828h157.64c4.832-0.003907 9.4688 1.9102 12.887 5.3242 3.418 3.4141 5.3359 8.0469 5.3359 12.879 0 4.832-1.9219 9.4648-5.3398 12.879zm-470.12 419.55c-3.418 3.4141-5.3398 8.0469-5.3398 12.879 0 4.832 1.918 9.4648 5.3359 12.879 3.418 3.4141 8.0547 5.3281 12.887 5.3242h157.64c6.6836 0 13.09-2.6562 17.816-7.3828 4.7266-4.7266 7.3828-11.133 7.3828-17.816v-157.64c0.003907-4.832-1.9102-9.4688-5.3242-12.887-3.4141-3.418-8.0469-5.3359-12.879-5.3359-4.832 0-9.4648 1.9219-12.879 5.3398l-60.984 60.984c-30.914-40.906-45.73-91.742-41.633-142.85 4.0977-51.113 26.82-98.938 63.855-134.4 37.035-35.465 85.801-56.09 137.04-57.965v-67.199c-69.102 1.8047-135.01 29.461-184.72 77.5-49.707 48.035-79.59 112.97-83.754 181.96-4.1602 69 17.703 137.05 61.273 190.72z"/>
+</svg>`;
+
 const template$1 = (scope) => {
     return $`
-    <div>
-        <h3 id="next">Current Set</h3>
-    </div>
     <div id="queue">
         ${scope.practicesets.currentSet.map((chord, index) => 
             $`<span @click=${() => scope.practicesets.currentIndex = index}
                     class="chord ${scope.practicesets.currentIndex === index ? 'current' : ''}">${chord}</span>`)}
+        <button class="has-icon" id="refresh" @click=${() => { 
+            scope.practicesets.generateRandomSet(); 
+            scope.practicesets.currentIndex = 0; 
+        }}>${RefreshIcon}</button>
     </div>
-    <hr />
-    <h3 id="next">Create a Set</h3>
-    <div id="set-generation">
-        <button @click=${() => scope.practicesets.generateRandomSet()}>Generate new random set</button>
-        <label>or enter your own chords:</label>
-        <textarea placeholder="example: C#7 E Gm" @change=${scope.onChangeCustomSet}></textarea>
-    </div>`;
+    <textarea placeholder="Use your own chords by adding here \rexample: C#7 E Gm" @change=${scope.onChangeCustomSet}></textarea>`;
 };
 
-const styles$1 = r$2`
+const styles$2 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22029,6 +22127,7 @@ const styles$1 = r$2`
   
   #queue {
     margin-top: 15px;
+    display: flex;
   }
   
   hr {
@@ -22038,39 +22137,45 @@ const styles$1 = r$2`
     margin-top: 25px;
   }
   
-  #set-generation {
-    display: flex;
-    align-items: center;
-  }
-  
-  #set-generation textarea {
-    height: 75px;
-    margin-left: 15px;
-  }
-
-  #set-generation button {
-    margin-right: 15px;
-    height: 50px;
-  }
-  
   span.chord {
     padding: 5px;
     margin: 2px;
+    min-width: 40px;
+    height: 34px;
+    display: flex;
     border-style: solid;
-    border-color: #acacac;
-    color: #acacac;
+    border-color: var(--green);
+    color: var(--green);
     cursor: pointer;
+    align-items: center;
+    text-align: center;
   }
 
   span.chord.current {
-    background-color: #6a6a6a;
-    border-color: white;
-    color: white
+    background-color: var(--darkish);
+    border-color: var(--darkish);
+    color: var(--lightest);
+  }
+
+  button#refresh {
+    width: 50px;
+    height: 50px;
+  }
+  button#refresh svg {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    fill: var(--lightest);
+  }
+  
+  textarea {
+    margin-top: 10px;
+    height: 50px;
   }
 `;
 
 class PlayQueue extends s {
-    static get styles() { return [ styles$1, styles$5 ] }
+    static get styles() { return [ styles$2, styles$7 ] }
 
     practicesets = new PracticeSetsController(this);
 
@@ -22121,7 +22226,7 @@ const template = (scope) => {
         </div>`;
 };
 
-const styles = r$2`
+const styles$1 = r$2`
   :host {
     display: flex;
     height: 100%;
@@ -22134,7 +22239,8 @@ const styles = r$2`
   }
 
   bsharp-flashcard {
-    margin-bottom: 20px;
+    background-color: var(--dark);
+    height: 160px;
   }
 
   bsharp-score {
@@ -22144,25 +22250,48 @@ const styles = r$2`
   bsharp-sidepanel {
     min-width: 230px;
     width: 230px;
-    height: calc(100% - 30px);
-    padding: 15px;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #eaeaea;
+    background-color: var(--dark);
   }
 
   #no-mode-header {
     height: 100px;
     display: inline-block;
-    margin-bottom: 5px;
-    padding: 15px;
-    width: calc(100% - 30px);
-  }
-
-  #main-container {
-    padding: 5px;
+    padding: 30px;
+    width: calc(100% - 60px);
+    background-color: var(--dark);
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--darkish);
+    outline-offset: -20px;
+    color: var(--light);
+    font-weight: 100;
   }
 `;
+
+const styles = r$2`
+  :host {
+    --dark: #2a2a2a;
+    --darkish: #4a4a4a;
+    --notsodark: #6a6a6a;
+    --kindalight: #a9a9a9;
+    --light: #cacaca;
+    --lightest: #fafafa;
+
+    --darkgreen: #385b09;
+    --green: #4e7d0e;
+    --lightgreen: #7db72f;
+
+    --red: #771414;
+
+    --action-color: var(--green);
+    --action-gradient: linear-gradient(to left top, var(--lightgreen) 0%, var(--green) 100%);
+    --action-hover: linear-gradient(to left top, var(--green) 0%, var(--darkgreen) 100%);
+    
+    --incorrect-color: var(--red);
+  }`;
 
 class App extends s {
     static LIVEPLAY_MODE = 'liveplay';
@@ -22171,7 +22300,7 @@ class App extends s {
 
     static NO_MODE = 'none';
 
-    static get styles() { return [ styles ] }
+    static get styles() { return [ styles$1, styles ] }
 
     static properties = {
         started: { type: Boolean },
