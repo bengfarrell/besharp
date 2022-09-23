@@ -11,23 +11,21 @@ export const template = (scope) => {
                 </div>
                 
                 <div class="stats-container" id="clock-container">
-                    <span>Timer:</span>
                     ${scope.mode === 'liveplay' ? html`
-                    <select @change=${scope.handleTimerDropdown}>
-                        <option value="10">10 seconds</option>
-                        <option selected value="15">15 seconds</option>
-                        <option value="30">30 seconds</option>
-                        <option value="45">45 seconds</option>
-                        <option value="60">1 minute</option>
-                        <option value="90">1m 30s</option>
-                        <option value="120">2 minutes</option>
-                        <option value="180">3 minutes</option>
-                        <option value="300">5 minutes</option>
-                        <option value="no-timer">No timer, I want to use the spacebar</option>
-                        <option value="smart-advance">Auto-detect and advance when I play the next chord</option>
-                    </select><br /><span class="tiny-text">or use the spacebar to advance manually<span>
-                    <h1 id="clock">${scope.transition ? '00:00' : scope.timer.formattedRemainingTime}</h1>`
-                            : html`<h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
+                                <span>Beats per Chord:</span>
+                                <input type="number" 
+                                       ?disabled=${scope.livePlayTimingMode !== 'timer'} 
+                                       @change=${scope.onBeatsPerChordChange} 
+                                       value=${scope.livePlayBeatsPerChord} />
+                                <select @change=${scope.handleTimerDropdown}>
+                                    <option value="timer" ?selected=${scope.livePlayTimingMode==='timer'}>Beat Countdown</option>
+                                    <option value="no-timer" ?selected=${scope.livePlayTimingMode==='no-timer'}>No Countdown</option>
+                                    <option value="auto-advance" ?selected=${scope.livePlayTimingMode==='auto-advance'}>Auto-detect and advance when I play the next chord</option>
+                                </select>
+                                <br />
+                                <span class="tiny-text">or use the spacebar to advance manually<span>
+                                    ${scope.livePlayTimingMode === 'timer' ? html`<h1 id="clock">${scope.livePlayCountdown} / ${scope.livePlayBeatsPerChord}</h1>`: undefined}`
+                            : html`<span>Timer:</span><h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
                 </div>
             </div>`;
     } else if (scope.transition) {

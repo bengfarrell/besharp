@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import { VoxController } from '../../inputs/vox.js';
+import { VoxController } from '../../../inputs/vox.js';
 
 export const template = (scope) => {
     return html`<span>Sing the input?</span>

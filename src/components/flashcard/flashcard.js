@@ -1,16 +1,17 @@
 import { LitElement } from 'lit';
 import { template } from './flashcard.html';
 import { styles } from './flashcard.css';
+import { styles as type } from '../style/type.css';
 import { Note } from '../../musictheory';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { ScoreModelController } from '../../models/score';
 import { TimerController } from '../../models/timer';
-import { InputsController } from '../../inputs/index.js';
+import { InputsController, Synth } from '../../inputs/index.js';
 import { PlayModeEvent } from './playmodeevent';
 import { App } from '../app';
 
 export class FlashCard extends LitElement {
-    static get styles() { return [ styles ] }
+    static get styles() { return [ styles, type ] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 
@@ -21,6 +22,9 @@ export class FlashCard extends LitElement {
         currentAttempt: { type: Array },
         started: { type: Boolean },
         transition: { type: Boolean, reflect: true },
+        livePlayBeatsPerChord: { type: Number },
+        livePlayCountdown: { type: Number },
+        livePlayTimingMode: { type: String }
     };
 
     constructor() {
@@ -32,54 +36,44 @@ export class FlashCard extends LitElement {
             if (e.type === 'setquestion') {
                 this.goCurrentQuestion();
             }
-
+        });
+        this.synth.addListener(e => {
+            if (e.type === 'tick' && this.mode === App.LIVEPLAY_MODE) {
+                this.livePlayCountdown --;
+                if (this.livePlayCountdown === 0) {
+                    this.goNextQuestion();
+                }
+            }
         })
         this.timer.start();
         this.transition = true;
         this.transitionToNextQuestion();
-        this._countDown = 15;
+
+        this.livePlayBeatsPerChord = 16;
+        this.livePlayCountdown = 0;
+        this.livePlayTimingMode = 'timer';
     }
 
     score = new ScoreModelController(this);
     timer = new TimerController(this);
     practiceset = new PracticeSetsController(this);
+    synth = new Synth(this);
     inputs = new InputsController(this);
     currentAttempt = [];
-    livePlayAutoAdvance = false;
     livePlayAutoTransitionCounter = 0;
 
-    /**
-     * count down (in seconds) for liveplay
-     * @param val
-     */
-    set countDown(val) {
-        this._countDown = val;
-        this.timer.resetCountdownTimer(this._countDown);
-        this.requestUpdate('countDown');
+    onBeatsPerChordChange(e) {
+        this.livePlayBeatsPerChord = parseInt(e.target.value);
+        this.livePlayCountdown = parseInt(e.target.value);
     }
 
     handleTimerDropdown(event) {
-        switch (event.target.value) {
-            case 'no-timer':
-                this.countDown = -1;
-                break;
-
-            case 'smart-advance':
-                this.countDown = -1;
-                break;
-
-            default:
-                this.countDown = Number(event.target.value);
-                break;
-        }
+        this.livePlayTimingMode = event.target.value;
+        this.livePlayCountdown = this.livePlayBeatsPerChord;
     }
 
     willUpdate(_changedProperties) {
         super.willUpdate(_changedProperties);
-
-        if (this.timer.remainingTime === 0) {
-            this.goNextQuestion();
-        }
         if (_changedProperties.has('transition')) {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
@@ -109,7 +103,7 @@ export class FlashCard extends LitElement {
     onFreePlayListener(data) {
         if (data.type === 'down') {
             this.score.incrementLivePlayNotes(this.currentQuestion.chord, data.input);
-            if (this.livePlayAutoAdvance) {
+            if (this.livePlayTimingMode === 'auto-advance') {
                 const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
                 const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
                 const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
@@ -178,15 +172,14 @@ export class FlashCard extends LitElement {
     }
 
     resetTimer() {
-        if (this.mode === App.LIVEPLAY_MODE) {
-            this.timer.resetCountdownTimer(this._countDown);
-        } else {
+        if (this.mode === App.QUIZ_MODE) {
             this.timer.resetQuestionTimer();
         }
     }
 
     goNextQuestion() {
         this.resetTimer();
+        this.livePlayCountdown = this.livePlayBeatsPerChord;
         this.currentQuestion = this.practiceset.goNext(
             this.mode === App.LIVEPLAY_MODE ? true : false);
     }
@@ -199,6 +192,18 @@ export class FlashCard extends LitElement {
 
     render() {
         return template(this);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.synth.stopMetronome();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        if (this.mode === App.LIVEPLAY_MODE) {
+            this.synth.startMetronome();
+        }
     }
 }
 

@@ -1,8 +1,8 @@
 import { LitElement } from 'lit';
-import { template } from './micsetup.html';
-import { styles } from './micsetup.css';
-import { styles as button } from '../style/button.css';
-import { VoxController } from '../../inputs/vox.js';
+import { template } from './micsetup.html.js';
+import { styles } from './micsetup.css.js';
+import { styles as button } from '../../style/button.css.js';
+import { VoxController } from '../../../inputs/vox.js';
 
 export class MicSetup extends LitElement {
     static get styles() { return [ styles, button ] }
@@ -40,4 +40,4 @@ export class MicSetup extends LitElement {
     }
 }
 
-customElements.define('bsharp-micsetup', MicSetup);
+customElements.define('bsharp-micsetup-panel', MicSetup);

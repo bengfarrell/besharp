@@ -1,26 +1,33 @@
 import { html } from 'lit';
-import '../midisetup';
-import '../micsetup';
-import '../theoryoptions';
+import '../panels/midisetup';
+import '../panels/micsetup';
+import '../panels/theoryoptions';
+import '../panels/metronome';
 import { App } from '../app/index.js';
 
 const panels = [
     {
         id: 1,
         name: 'MIDI Options',
-        el: html`<bsharp-midisetup></bsharp-midisetup>`,
-        open: true,
+        el: html`<bsharp-midisetup-panel></bsharp-midisetup-panel>`,
+        open: false,
     },
     {
         id: 2,
         name: 'Microphone Input',
-        el: html`<bsharp-micsetup></bsharp-micsetup>`,
-        open: true,
+        el: html`<bsharp-micsetup-panel></bsharp-micsetup-panel>`,
+        open: false,
     },
     {
         id: 3,
         name: 'Music Theory',
-        el: html`<bsharp-theoryoptions></bsharp-theoryoptions>`,
+        el: html`<bsharp-theoryoptions-panel></bsharp-theoryoptions-panel>`,
+        open: false,
+    },
+    {
+        id: 4,
+        name: 'Metronome',
+        el: html`<bsharp-metronome-panel></bsharp-metronome-panel>`,
         open: false,
     }
 ]
@@ -28,7 +35,7 @@ const panels = [
 export const template = (scope) => {
     return html`
         <div class="padded-container">
-            <h1>Be#Sharp</h1>
+            <h1 id="logo">Be#Sharp</h1>
             <div class="button-container">
                 ${scope.started ? html`<button class="large" @click=${scope.handleStopClick}>Stop</button>` : html`
                     <button class="large" @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>

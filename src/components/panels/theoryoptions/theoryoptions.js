@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
-import { template } from './theoryoptions.html';
-import { styles } from './theoryoptions.css';
-import { PracticeSetsController } from '../../models/practicesets.js';
+import { template } from './theoryoptions.html.js';
+import { styles } from './theoryoptions.css.js';
+import { PracticeSetsController } from '../../../models/practicesets.js';
 
 export class TheoryOptions extends LitElement {
     static get styles() { return [ styles ] }
@@ -17,4 +17,4 @@ export class TheoryOptions extends LitElement {
     }
 }
 
-customElements.define('bsharp-theoryoptions', TheoryOptions);
+customElements.define('bsharp-theoryoptions-panel', TheoryOptions);

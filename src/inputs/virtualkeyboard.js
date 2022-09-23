@@ -1,5 +1,5 @@
 import { Note } from '../musictheory/note';
-import * as Tone from 'tone';
+import { Synth } from './synth.js';
 
 export class VirtualKeyboardController {
     static hosts = [];
@@ -9,10 +9,6 @@ export class VirtualKeyboardController {
     static inputs = [];
 
     static notes = [];
-
-    static synth = new Tone.Synth().toDestination();
-
-    static synthTimingDict = {};
 
     constructor(host) {
         host.addController(this);
@@ -32,8 +28,7 @@ export class VirtualKeyboardController {
         if (indx === -1) {
             VirtualKeyboardController.notes.push(notation + octave);
             VirtualKeyboardController.notes = Note.sort(VirtualKeyboardController.notes);
-            VirtualKeyboardController.synthTimingDict[notation + octave] = Tone.now();
-            VirtualKeyboardController.synth.triggerAttack(`${notation}${octave}`, VirtualKeyboardController.toneTime);
+            Synth.press(notation, octave);
             VirtualKeyboardController.noteListeners.forEach(cb => cb({ type: 'down', note: notation, octave }));
             VirtualKeyboardController.hosts.forEach(host => {
                 host.requestUpdate();
@@ -46,8 +41,7 @@ export class VirtualKeyboardController {
         if (indx !== -1) {
             VirtualKeyboardController.notes.splice(indx, 1);
             VirtualKeyboardController.notes = Note.sort(VirtualKeyboardController.notes);
-            VirtualKeyboardController.synth.triggerRelease(VirtualKeyboardController.synthTimingDict[notation + octave] + .25);
-            delete VirtualKeyboardController.synthTimingDict[notation + octave];
+            Synth.release(notation, octave);
             VirtualKeyboardController.noteListeners.forEach(cb => cb({ type: 'up', note: notation, octave }));
             VirtualKeyboardController.hosts.forEach(host => {
                 host.requestUpdate();

@@ -1,8 +1,8 @@
 import { LitElement } from 'lit';
-import { template } from './midisetup.html';
-import { styles } from './midisetup.css';
-import { styles as button } from '../style/button.css';
-import { MidiController } from '../../inputs/midi.js';
+import { template } from './midisetup.html.js';
+import { styles } from './midisetup.css.js';
+import { styles as button } from '../../style/button.css.js';
+import { MidiController } from '../../../inputs/midi.js';
 
 export class MidiSetup extends LitElement {
     static get styles() { return [ styles, button ] }
@@ -32,4 +32,4 @@ export class MidiSetup extends LitElement {
     }
 }
 
-customElements.define('bsharp-midisetup', MidiSetup);
+customElements.define('bsharp-midisetup-panel', MidiSetup);

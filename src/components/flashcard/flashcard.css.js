@@ -87,12 +87,11 @@ export const styles = css`
     display: flex;
   }
   
-  .tiny-text {
-    font-size: 10px;
-    font-weight: 100;
+  input {
+    width: 50px;
   }
   
   select {
-    width: 100px;
+    width: 125px;
   }
 `;
