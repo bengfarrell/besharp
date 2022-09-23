@@ -26,7 +26,7 @@ var t$1;const i$1=globalThis.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{c
 
 (function(factory){typeof define==="function"&&define.amd?define(factory):factory();})((function(){const Notes=["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"];function*noteGenerator(startNote){const pivot=Notes.indexOf(startNote);const layout=[...Notes.slice(pivot,Notes.length),...Notes.slice(0,pivot)];let octave=0;let first=true;while(true){for(let i=0;i<layout.length;i++){const note=layout[i];if(note==="C"&&!first){octave=octave+1;}yield {name:note,octave:octave};first=false;}}}const NaturalWidth=10;const SharpWidth=6;function sharpKey(note,octave,offset){return `<rect class="sharp-note note" data-note="${note}" data-octave="${octave}" x=${offset} y=1></rect>`}function naturalKey(note,octave,offset){return `<rect class="natural-note note" data-note="${note}" data-octave="${octave}" x=${offset} y=1></rect>`}class Piano extends HTMLElement{constructor(){super();this.root=this.attachShadow({mode:"open"});this.root.addEventListener("mousedown",event=>{this.handleClick(event,true);event.preventDefault();});this.root.addEventListener("mouseup",event=>{this.handleClick(event,false);event.preventDefault();});this.root.addEventListener("mouseout",event=>{this.handleClick(event,false);event.preventDefault();});this.root.innerHTML=`<style>${this.getCss()}</style><div>${this.getNoteSvg()}`;}static get observedAttributes(){return ["key-count","keyboard-layout","read-only"]}get config(){return {keyCount:parseInt(this.getAttribute("key-count")||"88"),keyboardLayout:this.getAttribute("keyboard-layout")||"A",readOnly:this.hasAttribute("read-only")}}connectedCallback(){}attributeChangedCallback(){this.root.innerHTML=`<style>${this.getCss()}</style><div>${this.getNoteSvg()}</div>`;}handleClick(event,down){if(this.config.readOnly){return}const target=event.target;if(target.tagName==="rect"){const note=event.target.getAttribute("data-note");const octave=parseInt(event.target.getAttribute("data-octave"));if(down){this.setNoteDown(note,octave);this.dispatchEvent(new CustomEvent("note-down",{detail:{note:note,octave:octave}}));}else {if(target.hasAttribute("data-depressed")){this.setNoteUp(note,octave);this.dispatchEvent(new CustomEvent("note-up",{detail:{note:note,octave:octave}}));}}}}setNoteDown(note,octave){const elem=this.root.querySelector(keySelector(note,octave));elem.classList.add("depressed");elem.setAttribute("data-depressed","data-depressed");}setNoteUp(note,octave){const elem=this.root.querySelector(keySelector(note,octave));elem.classList.remove("depressed");elem.removeAttribute("data-depressed");}getNoteSvg(){const noteCount=this.config.keyCount;const generator=noteGenerator(this.config.keyboardLayout);const notes=new Array(noteCount).fill(1).map(()=>generator.next().value);const naturalKeys=notes.filter(note=>!note.name.includes("#")).length;const lastKeySharp=notes[notes.length-1].name.includes("#");const totalWidth=naturalKeys*NaturalWidth+(lastKeySharp?SharpWidth/2:0)+2;return `<svg viewBox="0 0 ${totalWidth} 52" version="1.1" xmlns="http://www.w3.org/2000/svg">\n            ${this.getKeysForNotes(notes)}\n        </svg>`}getKeysForNotes(notes){let totalOffset=-NaturalWidth+1;const offsets=notes.map(note=>{const isSharp=note.name.includes("#");let thisOffset=0;if(isSharp){thisOffset=totalOffset+7;}else {totalOffset=totalOffset+NaturalWidth;thisOffset=totalOffset;}return {note:note.name,octave:note.octave,offset:thisOffset}});const naturalKeys=offsets.filter(pos=>!pos.note.includes("#")).map(pos=>naturalKey(pos.note,pos.octave,pos.offset));const sharpKeys=offsets.filter(pos=>pos.note.includes("#")).map(pos=>sharpKey(pos.note,pos.octave,pos.offset));return `<g>\n            ${naturalKeys}\n            ${sharpKeys}\n        </g>`}getCss(){return `\n        \n        :host {\n            --natural-key-color: #FFFFFF; \n            --natural-key-outline-color: #555555;\n            \n            --sharp-key-color: #555555;\n            --sharp-key-outline-color: #555555;\n            \n            --depressed-key-color: #808080;\n            --depressed-key-transform: scale(1, 0.95);\n        }\n        \n        :host {\n          display: block;\n        }\n        \n        .natural-note {\n          stroke: var(--natural-key-outline-color);\n          fill: var(--natural-key-color);\n          width: ${NaturalWidth}px;\n          height: 50px;\n        }\n        \n        .sharp-note {\n          stroke: var(--sharp-key-outline-color);\n          fill: var(--sharp-key-color);\n          width: ${SharpWidth}px;\n          height: 30px;\n        }\n        \n        .depressed {\n          fill: var(--depressed-key-color);\n          transform: var(--depressed-key-transform);\n        }\n        `}}const keySelector=(note,octave)=>`[data-note="${note}"][data-octave="${octave}"]`;customElements.define("piano-keys",Piano);}));
 
-const template$7 = (scope) => {
+const template$8 = (scope) => {
     if (scope.started && !scope.transition) {
         return $`
             <div class="question-ui" id="play-controls">
@@ -37,23 +37,21 @@ const template$7 = (scope) => {
                 </div>
                 
                 <div class="stats-container" id="clock-container">
-                    <span>Timer:</span>
                     ${scope.mode === 'liveplay' ? $`
-                    <select @change=${scope.handleTimerDropdown}>
-                        <option value="10">10 seconds</option>
-                        <option selected value="15">15 seconds</option>
-                        <option value="30">30 seconds</option>
-                        <option value="45">45 seconds</option>
-                        <option value="60">1 minute</option>
-                        <option value="90">1m 30s</option>
-                        <option value="120">2 minutes</option>
-                        <option value="180">3 minutes</option>
-                        <option value="300">5 minutes</option>
-                        <option value="no-timer">No timer, I want to use the spacebar</option>
-                        <option value="smart-advance">Auto-detect and advance when I play the next chord</option>
-                    </select><br /><span class="tiny-text">or use the spacebar to advance manually<span>
-                    <h1 id="clock">${scope.transition ? '00:00' : scope.timer.formattedRemainingTime}</h1>`
-                            : $`<h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
+                                <span>Beats per Chord:</span>
+                                <input type="number" 
+                                       ?disabled=${scope.livePlayTimingMode !== 'timer'} 
+                                       @change=${scope.onBeatsPerChordChange} 
+                                       value=${scope.livePlayBeatsPerChord} />
+                                <select @change=${scope.handleTimerDropdown}>
+                                    <option value="timer" ?selected=${scope.livePlayTimingMode==='timer'}>Beat Countdown</option>
+                                    <option value="no-timer" ?selected=${scope.livePlayTimingMode==='no-timer'}>No Countdown</option>
+                                    <option value="auto-advance" ?selected=${scope.livePlayTimingMode==='auto-advance'}>Auto-detect and advance when I play the next chord</option>
+                                </select>
+                                <br />
+                                <span class="tiny-text">or use the spacebar to advance manually<span>
+                                    ${scope.livePlayTimingMode === 'timer' ? $`<h1 id="clock">${scope.livePlayCountdown} / ${scope.livePlayBeatsPerChord}</h1>`: undefined}`
+                            : $`<span>Timer:</span><h1 id="clock">${scope.transition ? '00:00' : scope.timer.elapsedQuestionTime}</h1>`}
                 </div>
             </div>`;
     } else if (scope.transition) {
@@ -67,7 +65,7 @@ const template$7 = (scope) => {
     }
 };
 
-const styles$a = r$2`
+const styles$b = r$2`
   :host {
     width: 100%;
     height: 100px;
@@ -154,13 +152,25 @@ const styles$a = r$2`
     display: flex;
   }
   
-  .tiny-text {
-    font-size: 10px;
-    font-weight: 100;
+  input {
+    width: 50px;
   }
   
   select {
-    width: 100px;
+    width: 125px;
+  }
+`;
+
+const styles$a = r$2`
+  #logo {
+    font-family: rhythm-two-solid, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  .tiny-text {
+    font-size: 10px;
+    font-weight: 100;
   }
 `;
 
@@ -1547,10 +1557,6 @@ class TimerController {
 
     static sessionStartTime = 0;
 
-    static countDownStart = 0;
-
-    static countDownCurrent = -1;
-
     static timer = -1;
 
     host;
@@ -1571,15 +1577,7 @@ class TimerController {
     refreshTime() {
         const elapsedQuestionTime = Date.now() - TimerController.questionStartTime;
         const elapsedSessionTime = Date.now() - TimerController.sessionStartTime;
-
-        if (TimerController.countDownStart && TimerController.countDownStart !== Infinity) {
-            TimerController.countDownCurrent = Math.max(TimerController.countDownStart - elapsedQuestionTime, 0);
-            TimerController.questionTimer = this.formatTime(TimerController.countDownCurrent);
-        } else if (TimerController.countDownStart === Infinity) {
-            TimerController.countDownCurrent = Infinity;
-        } else {
-            TimerController.questionTimer = this.formatTime(elapsedQuestionTime);
-        }
+        TimerController.questionTimer = this.formatTime(elapsedQuestionTime);
         TimerController.sessionTimer = this.formatTime(elapsedSessionTime);
         TimerController.hosts.forEach(host => {
             host.requestUpdate();
@@ -1588,17 +1586,6 @@ class TimerController {
 
     resetQuestionTimer() {
         TimerController.questionStartTime = Date.now();
-        TimerController.countDownStart = 0;
-        this.refreshTime();
-    }
-
-    resetCountdownTimer(countdown) {
-        TimerController.questionStartTime = Date.now();
-        if (countdown === -1) {
-            TimerController.countDownStart = Infinity;
-        } else {
-            TimerController.countDownStart = countdown * 1000;
-        }
         this.refreshTime();
     }
 
@@ -1629,14 +1616,6 @@ class TimerController {
 
     get elapsedSessionTime() {
         return TimerController.sessionTimer;
-    }
-
-    get remainingTime() {
-        return TimerController.countDownCurrent;
-    }
-
-    get formattedRemainingTime() {
-        return this.formatTime(TimerController.countDownCurrent);
     }
 
     hostConnected() {
@@ -11725,6 +11704,22 @@ function setContext(context) {
     }
 }
 /**
+ * Most browsers will not play _any_ audio until a user
+ * clicks something (like a play button). Invoke this method
+ * on a click or keypress event handler to start the audio context.
+ * More about the Autoplay policy
+ * [here](https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio)
+ * @example
+ * document.querySelector("button").addEventListener("click", async () => {
+ * 	await Tone.start();
+ * 	console.log("context started");
+ * });
+ * @category Core
+ */
+function start() {
+    return globalContext.resume();
+}
+/**
  * Log Tone.js + version in the console.
  */
 if (theWindow && !theWindow.TONE_SILENCE_LOGGING) {
@@ -15851,9 +15846,9 @@ class TransportRepeatEvent extends TransportEvent {
  * Tone.Transport.start();
  * @category Core
  */
-class Transport extends ToneWithContext {
+class Transport$1 extends ToneWithContext {
     constructor() {
-        super(optionsFromArguments(Transport.getDefaults(), arguments));
+        super(optionsFromArguments(Transport$1.getDefaults(), arguments));
         this.name = "Transport";
         //-------------------------------------
         // 	LOOPING
@@ -15893,7 +15888,7 @@ class Transport extends ToneWithContext {
          * The swing amount
          */
         this._swingAmount = 0;
-        const options = optionsFromArguments(Transport.getDefaults(), arguments);
+        const options = optionsFromArguments(Transport$1.getDefaults(), arguments);
         // CLOCK/TEMPO
         this._ppq = options.ppq;
         this._clock = new Clock({
@@ -16392,12 +16387,12 @@ class Transport extends ToneWithContext {
         return this;
     }
 }
-Emitter.mixin(Transport);
+Emitter.mixin(Transport$1);
 //-------------------------------------
 // 	INITIALIZATION
 //-------------------------------------
 onContextInit(context => {
-    context.transport = new Transport({ context });
+    context.transport = new Transport$1({ context });
 });
 onContextClose(context => {
     context.transport.dispose();
@@ -20801,7 +20796,7 @@ function now() {
  * See [[Transport]]
  * @category Core
  */
-getContext().transport;
+const Transport = getContext().transport;
 /**
  * The Destination (output) belonging to the global Tone.js Context.
  * See [[Destination]]
@@ -20828,6 +20823,158 @@ getContext().draw;
  * See [[Context]]
  */
 getContext();
+const Buffer = ToneAudioBuffer;
+
+class Synth {
+    static hosts = [];
+
+    static synth = new Synth$1().toDestination();
+
+    static metronomeLoaded = false;
+
+    static metronomeTimerID = undefined;
+
+    static metronomePlayer = new Player("./assets/woodblock.wav").toDestination();
+
+    static synthTimingDict = {};
+
+    static _BPM = 60;
+
+    static _metronomeInterval = '4n';
+
+    static _metronomeRunning = false;
+
+    static _metronomeSilent = false;
+
+    static listeners = [];
+
+    constructor(host) {
+        host.addController(this);
+        Synth.hosts.push(host);
+    }
+
+    static get now() {
+        return now();
+    }
+
+    set metronomeInterval(interval) {
+        Synth._metronomeInterval = interval;
+        Synth.stopMetronome();
+        Synth.startMetronome();
+        Synth.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    get metronomeInterval() {
+        return Synth._metronomeInterval;
+    }
+
+    set BPM(bpm) {
+        Synth._BPM = bpm;
+        Transport.bpm.value = Synth._BPM;
+        Synth.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    get BPM() {
+        return Synth._BPM;
+    }
+
+    set isMetronomeSilent(val) {
+        Synth._metronomeSilent = val;
+    }
+
+    get isMetronomeSilent() {
+        return Synth._metronomeSilent;
+    }
+
+
+    get isMetronomeRunning() {
+        return Synth._metronomeRunning;
+    }
+
+    toggleMetronome() {
+        if (Synth._metronomeRunning) {
+            this.stopMetronome();
+        } else {
+            this.startMetronome();
+        }
+    }
+
+    startMetronome() {
+        Synth.startMetronome();
+    }
+
+    static startMetronome() {
+        if (Synth._metronomeRunning) {
+            return;
+        }
+        start();
+        Synth.metronomeTimerID = Transport.scheduleRepeat((time) => {
+            if (!Synth._metronomeSilent) {
+                Synth.metronomePlayer.start(time);
+            }
+            Synth.listeners.forEach(cb => cb({ type: 'tick' }));
+        }, Synth._metronomeInterval);
+        Transport.start();
+
+        Synth._metronomeRunning = true;
+        Synth.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    stopMetronome() {
+        Synth.stopMetronome();
+    }
+
+    static stopMetronome() {
+        Synth._metronomeRunning = false;
+        Transport.stop();
+        Transport.clear(Synth.metronomeTimerID);
+        Synth.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    static press(notation, octave) {
+        const toneTime = now();
+        Synth.synthTimingDict[notation + octave] = toneTime;
+        Synth.synth.triggerAttack(`${notation}${octave}`, toneTime);
+    }
+
+    static release(notation, octave) {
+        Synth.synth.triggerRelease(Synth.synthTimingDict[notation + octave] + .25);
+        delete Synth.synthTimingDict[notation + octave];
+    }
+
+    static pressAndRelease(notation, octave, duration, time) {
+        Synth.synth.triggerAttackRelease(notation + octave, duration, time);
+    }
+
+    addListener(callback) {
+        Synth.addListener(callback);
+    }
+
+    removeListener(callback) {
+        Synth.removeListener(callback);
+    }
+
+    static addListener(callback) {
+        Synth.listeners.push(callback);
+    }
+
+    static removeListener(callback) {
+        Synth.listeners.splice(Synth.listeners.indexOf(callback), 1);
+    }
+}
+
+Transport.bpm.value = Synth._BPM;
+Buffer.onload = function() {
+   Synth.metronomeLoaded = true;
+};
 
 class VirtualKeyboardController {
     static hosts = [];
@@ -20837,10 +20984,6 @@ class VirtualKeyboardController {
     static inputs = [];
 
     static notes = [];
-
-    static synth = new Synth$1().toDestination();
-
-    static synthTimingDict = {};
 
     constructor(host) {
         host.addController(this);
@@ -20860,8 +21003,7 @@ class VirtualKeyboardController {
         if (indx === -1) {
             VirtualKeyboardController.notes.push(notation + octave);
             VirtualKeyboardController.notes = Note.sort(VirtualKeyboardController.notes);
-            VirtualKeyboardController.synthTimingDict[notation + octave] = now();
-            VirtualKeyboardController.synth.triggerAttack(`${notation}${octave}`, VirtualKeyboardController.toneTime);
+            Synth.press(notation, octave);
             VirtualKeyboardController.noteListeners.forEach(cb => cb({ type: 'down', note: notation, octave }));
             VirtualKeyboardController.hosts.forEach(host => {
                 host.requestUpdate();
@@ -20874,8 +21016,7 @@ class VirtualKeyboardController {
         if (indx !== -1) {
             VirtualKeyboardController.notes.splice(indx, 1);
             VirtualKeyboardController.notes = Note.sort(VirtualKeyboardController.notes);
-            VirtualKeyboardController.synth.triggerRelease(VirtualKeyboardController.synthTimingDict[notation + octave] + .25);
-            delete VirtualKeyboardController.synthTimingDict[notation + octave];
+            Synth.release(notation, octave);
             VirtualKeyboardController.noteListeners.forEach(cb => cb({ type: 'up', note: notation, octave }));
             VirtualKeyboardController.hosts.forEach(host => {
                 host.requestUpdate();
@@ -21205,31 +21346,6 @@ class VoxController {
     }
 }
 
-class Synth {
-    static synth = new Synth$1().toDestination();
-
-    static synthTimingDict = {};
-
-    static get now() {
-        return now();
-    }
-
-    static press(notation, octave) {
-        const toneTime = now();
-        Synth.synthTimingDict[notation + octave] = toneTime;
-        Synth.synth.triggerAttack(`${notation}${octave}`, toneTime);
-    }
-
-    static release(notation, octave) {
-        Synth.synth.triggerRelease(Synth.synthTimingDict[notation + octave] + .25);
-        delete Synth.synthTimingDict[notation + octave];
-    }
-
-    static pressAndRelease(notation, octave, duration, time) {
-        Synth.synth.triggerAttackRelease(notation + octave, duration, time);
-    }
-}
-
 class InputsController {
     static hosts = [];
 
@@ -21298,7 +21414,7 @@ class PlayModeEvent extends Event {
 }
 
 class FlashCard extends s {
-    static get styles() { return [ styles$a ] }
+    static get styles() { return [ styles$b, styles$a ] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 
@@ -21309,6 +21425,9 @@ class FlashCard extends s {
         currentAttempt: { type: Array },
         started: { type: Boolean },
         transition: { type: Boolean, reflect: true },
+        livePlayBeatsPerChord: { type: Number },
+        livePlayCountdown: { type: Number },
+        livePlayTimingMode: { type: String }
     };
 
     constructor() {
@@ -21320,54 +21439,44 @@ class FlashCard extends s {
             if (e.type === 'setquestion') {
                 this.goCurrentQuestion();
             }
-
+        });
+        this.synth.addListener(e => {
+            if (e.type === 'tick' && this.mode === App.LIVEPLAY_MODE) {
+                this.livePlayCountdown --;
+                if (this.livePlayCountdown === 0) {
+                    this.goNextQuestion();
+                }
+            }
         });
         this.timer.start();
         this.transition = true;
         this.transitionToNextQuestion();
-        this._countDown = 15;
+
+        this.livePlayBeatsPerChord = 16;
+        this.livePlayCountdown = 0;
+        this.livePlayTimingMode = 'timer';
     }
 
     score = new ScoreModelController(this);
     timer = new TimerController(this);
     practiceset = new PracticeSetsController(this);
+    synth = new Synth(this);
     inputs = new InputsController(this);
     currentAttempt = [];
-    livePlayAutoAdvance = false;
     livePlayAutoTransitionCounter = 0;
 
-    /**
-     * count down (in seconds) for liveplay
-     * @param val
-     */
-    set countDown(val) {
-        this._countDown = val;
-        this.timer.resetCountdownTimer(this._countDown);
-        this.requestUpdate('countDown');
+    onBeatsPerChordChange(e) {
+        this.livePlayBeatsPerChord = parseInt(e.target.value);
+        this.livePlayCountdown = parseInt(e.target.value);
     }
 
     handleTimerDropdown(event) {
-        switch (event.target.value) {
-            case 'no-timer':
-                this.countDown = -1;
-                break;
-
-            case 'smart-advance':
-                this.countDown = -1;
-                break;
-
-            default:
-                this.countDown = Number(event.target.value);
-                break;
-        }
+        this.livePlayTimingMode = event.target.value;
+        this.livePlayCountdown = this.livePlayBeatsPerChord;
     }
 
     willUpdate(_changedProperties) {
         super.willUpdate(_changedProperties);
-
-        if (this.timer.remainingTime === 0) {
-            this.goNextQuestion();
-        }
         if (_changedProperties.has('transition')) {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
@@ -21397,7 +21506,7 @@ class FlashCard extends s {
     onFreePlayListener(data) {
         if (data.type === 'down') {
             this.score.incrementLivePlayNotes(this.currentQuestion.chord, data.input);
-            if (this.livePlayAutoAdvance) {
+            if (this.livePlayTimingMode === 'auto-advance') {
                 const isLikeLastQuestion = this.practiceset.previewLastQuestion().hasCommonality(InputsController.notes);
                 const isLikeNextQuestion = this.practiceset.previewNextQuestion().hasCommonality(InputsController.notes);
                 const isLikeCurrentQuestion = this.currentQuestion.hasCommonality(InputsController.notes);
@@ -21466,15 +21575,14 @@ class FlashCard extends s {
     }
 
     resetTimer() {
-        if (this.mode === App.LIVEPLAY_MODE) {
-            this.timer.resetCountdownTimer(this._countDown);
-        } else {
+        if (this.mode === App.QUIZ_MODE) {
             this.timer.resetQuestionTimer();
         }
     }
 
     goNextQuestion() {
         this.resetTimer();
+        this.livePlayCountdown = this.livePlayBeatsPerChord;
         this.currentQuestion = this.practiceset.goNext(
             this.mode === App.LIVEPLAY_MODE ? true : false);
     }
@@ -21486,13 +21594,25 @@ class FlashCard extends s {
     }
 
     render() {
-        return template$7(this);
+        return template$8(this);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.synth.stopMetronome();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        if (this.mode === App.LIVEPLAY_MODE) {
+            this.synth.startMetronome();
+        }
     }
 }
 
 customElements.define('bsharp-flashcard', FlashCard);
 
-const template$6 = (scope) => {
+const template$7 = (scope) => {
     if (scope.mode === App.QUIZ_MODE) {
         return $`
             <div class="stats-container">
@@ -21584,7 +21704,7 @@ class Score extends s {
     timer = new TimerController(this);
 
     render() {
-        return template$6(this);
+        return template$7(this);
     }
 
     onIncorrect() {
@@ -21597,7 +21717,7 @@ class Score extends s {
 
 customElements.define('bsharp-score', Score);
 
-const template$5 = (scope) => {
+const template$6 = (scope) => {
     if (scope.midi.inputs.length === 0) {
         return $`<span>Please connect a midi device <i>(works in Chrome/Edge only)</i></span>
         <br />
@@ -21709,7 +21829,7 @@ class MidiSetup extends s {
     midi = new MidiController(this);
 
     render() {
-        return template$5(this);
+        return template$6(this);
     }
 
     learnTrigger() {
@@ -21731,9 +21851,9 @@ class MidiSetup extends s {
     }
 }
 
-customElements.define('bsharp-midisetup', MidiSetup);
+customElements.define('bsharp-midisetup-panel', MidiSetup);
 
-const template$4 = (scope) => {
+const template$5 = (scope) => {
     return $`<span>Sing the input?</span>
         <canvas width="200" height="50"}></canvas>
         <h3 id="note">${VoxController.note || ' - '}</h3>
@@ -21771,7 +21891,7 @@ class MicSetup extends s {
     isVisualizing = false;
 
     render() {
-        return template$4();
+        return template$5();
     }
 
     updated(_changedProperties) {
@@ -21799,7 +21919,7 @@ class MicSetup extends s {
     }
 }
 
-customElements.define('bsharp-micsetup', MicSetup);
+customElements.define('bsharp-micsetup-panel', MicSetup);
 
 /**
  * @license
@@ -21814,7 +21934,7 @@ const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e
  * SPDX-License-Identifier: BSD-3-Clause
  */const o=e(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.et){this.et=new Set,void 0!==i.strings&&(this.st=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.st)||void 0===r?void 0:r.has(t))&&this.et.add(t);return this.render(s)}const e=i.element.classList;this.et.forEach((t=>{t in s||(e.remove(t),this.et.delete(t));}));for(const t in s){const i=!!s[t];i===this.et.has(t)||(null===(o=this.st)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.et.add(t)):(e.remove(t),this.et.delete(t)));}return b}});
 
-const template$3 = (scope) => {
+const template$4 = (scope) => {
     return $`
         <label>Music theory rules when generating random sets</label>
         ${renderOptions(scope, scope.sets.options)}`;
@@ -21882,29 +22002,97 @@ class TheoryOptions extends s {
     }
 
     render() {
+        return template$4(this);
+    }
+}
+
+customElements.define('bsharp-theoryoptions-panel', TheoryOptions);
+
+const timeSubdivisions = ["1m", "1n", "1n.", "2n", "2n.", "2t", "4n",  "4n.",  "4t", "8n", "8n.", "8t",
+    "16n", "16n.", "16t", "32n", "32n.", "32t", "64n", "64n.", "64t", "128n", "128n.", "128t",
+    "256n", "256n.", "256t" ];
+
+const template$3 = (scope) => {
+    return $`
+    <label>Beats per Minute</label>
+    <input type="number" 
+           value=${scope.synth.BPM} 
+           @input=${(e) => scope.synth.BPM = parseInt(e.target.value)} />
+    
+    <br />
+    <label>Timing</label>
+    <select @change=${(event) => scope.synth.metronomeInterval = event.target.value}>
+        ${timeSubdivisions.map(t => $`<option value=${t}>${t}</option>`)}
+    </select>
+
+    <br />
+    
+    <div>
+        <label>Silent?</label>
+        <input type="checkbox" ?checked=${scope.synth.isMetronomeSilent} @change=${(event) => scope.synth.isMetronomeSilent = event.target.checked} />
+    </div>
+    <span class="tiny-text">Metronome timing will still be used for live playback even if silent</span>
+
+    <br />
+    <button @click=${() => scope.synth.toggleMetronome()}>${scope.synth.isMetronomeRunning ? 'Stop' : 'Start'}</button>`;
+};
+
+const styles$4 = r$2`
+  :host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  input, select {
+    margin-top: 5px;
+  }
+  
+  button {
+    width: 100%;
+  }
+
+  .tiny-text {
+    text-align: center;
+    margin-top: 5px;
+  }
+`;
+
+class Metronome extends s {
+    static get styles() { return [ styles$4, styles$7, styles$a ] }
+
+    synth = new Synth(this);
+
+    render() {
         return template$3(this);
     }
 }
 
-customElements.define('bsharp-theoryoptions', TheoryOptions);
+customElements.define('bsharp-metronome-panel', Metronome);
 
 const panels = [
     {
         id: 1,
         name: 'MIDI Options',
-        el: $`<bsharp-midisetup></bsharp-midisetup>`,
-        open: true,
+        el: $`<bsharp-midisetup-panel></bsharp-midisetup-panel>`,
+        open: false,
     },
     {
         id: 2,
         name: 'Microphone Input',
-        el: $`<bsharp-micsetup></bsharp-micsetup>`,
-        open: true,
+        el: $`<bsharp-micsetup-panel></bsharp-micsetup-panel>`,
+        open: false,
     },
     {
         id: 3,
         name: 'Music Theory',
-        el: $`<bsharp-theoryoptions></bsharp-theoryoptions>`,
+        el: $`<bsharp-theoryoptions-panel></bsharp-theoryoptions-panel>`,
+        open: false,
+    },
+    {
+        id: 4,
+        name: 'Metronome',
+        el: $`<bsharp-metronome-panel></bsharp-metronome-panel>`,
         open: false,
     }
 ];
@@ -21912,7 +22100,7 @@ const panels = [
 const template$2 = (scope) => {
     return $`
         <div class="padded-container">
-            <h1>Be#Sharp</h1>
+            <h1 id="logo">Be#Sharp</h1>
             <div class="button-container">
                 ${scope.started ? $`<button class="large" @click=${scope.handleStopClick}>Stop</button>` : $`
                     <button class="large" @click=${() => scope.handleStartClick(App.QUIZ_MODE)}>Start Quiz</button>
@@ -21938,7 +22126,7 @@ const template$2 = (scope) => {
         </div>`;
 };
 
-const styles$4 = r$2`
+const styles$3 = r$2`
   :host {
     color-scheme: dark;
   }
@@ -22047,20 +22235,12 @@ const styles$4 = r$2`
   }
 `;
 
-const styles$3 = r$2`
-  h1 {
-    font-family: rhythm-two-solid, sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-`;
-
 class SidePanel extends s {
 
     mode = App.QUIZ_MODE;
     timer = new TimerController(this);
 
-    static get styles() { return [ styles$4, styles$7, styles$3 ] }
+    static get styles() { return [ styles$3, styles$7, styles$a ] }
 
     static properties = {
         started: { type: Boolean },
