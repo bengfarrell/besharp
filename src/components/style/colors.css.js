@@ -13,11 +13,12 @@ export const styles = css`
     --green: #4e7d0e;
     --lightgreen: #7db72f;
 
+    --lightred: #c54a4a;
     --red: #771414;
 
     --action-color: var(--green);
     --action-gradient: linear-gradient(to left top, var(--lightgreen) 0%, var(--green) 100%);
     --action-hover: linear-gradient(to left top, var(--green) 0%, var(--darkgreen) 100%);
-    
+
     --incorrect-color: var(--red);
   }`;

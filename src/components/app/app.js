@@ -1,9 +1,11 @@
 import { LitElement } from 'lit';
 import { template } from './app.html';
 import { styles } from './app.css';
-import { styles as colors } from '../style/colors.css.js';
+import { styles as colors } from '../style/colors.css';
 import { Chord } from '../../musictheory';
-import { InputsController, Synth } from '../../inputs/index.js';
+import { InputsController, Synth } from '../../inputs/index';
+import { ModalEvent } from '../modal/modalevent';
+import { PlaySongEvent } from '../panels/playlist/playsongevent';
 
 export class App extends LitElement {
     static LIVEPLAY_MODE = 'liveplay';
@@ -16,7 +18,9 @@ export class App extends LitElement {
 
     static properties = {
         started: { type: Boolean },
-        mode: { type: String }
+        mode: { type: String },
+        song: { type: String },
+        currentModal: { type: String }
     };
 
     inputs = new InputsController(this);
@@ -27,6 +31,21 @@ export class App extends LitElement {
         this.mode = App.NO_MODE;
         this.disableInput = false;
         this.notes = [];
+        this.currentModal = undefined;
+        this.currentModalOptions = undefined;
+        this.addEventListener(ModalEvent.TRIGGER_MODAL_OPEN, e => {
+            this.currentModal = e.modalName;
+            this.currentModalOptions = e.options;
+        });
+        this.addEventListener(ModalEvent.TRIGGER_MODAL_CLOSE, e => {
+            this.currentModal = undefined;
+            this.currentModalOptions = undefined;
+        });
+        this.addEventListener(PlaySongEvent.EVENT_TYPE, e => {
+            this.song = e.guid;
+            this.mode = App.LIVEPLAY_MODE;
+            this.started = true;
+        })
     }
 
     firstUpdated(_changedProperties) {

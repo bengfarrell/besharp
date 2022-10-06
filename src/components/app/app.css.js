@@ -7,7 +7,7 @@ export const styles = css`
   }
   
   div {
-    width: 100%;
+    width: calc(100% - 230px);
     display: flex;
     flex-direction: column;
   }
@@ -42,5 +42,4 @@ export const styles = css`
     outline-offset: -20px;
     color: var(--light);
     font-weight: 100;
-  }
-`;
+  }`;

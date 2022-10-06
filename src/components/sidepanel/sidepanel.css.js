@@ -57,6 +57,7 @@ export const styles = css`
     padding: 4px;
     padding-left: 26px;
     position: relative;
+    cursor: pointer;
   }
 
   .panel-content {
@@ -70,6 +71,7 @@ export const styles = css`
   }
   
   button.toggle-open {
+    pointer-events: none;
     position: absolute; 
     margin: 0;
     width: 25px;
@@ -80,7 +82,7 @@ export const styles = css`
   }
   
   button.toggle-open span {
-    cursor: pointer;
+    pointer-events: none;
     display: inline-block;
     border-top: 8px solid var(--lightgreen);
     border-left: 6px solid transparent;

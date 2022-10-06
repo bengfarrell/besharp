@@ -4,11 +4,13 @@ import { styles } from './playqueue.css';
 import { styles as button } from '../style/button.css';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { Note } from '../../musictheory/index.js';
+import { SongsController } from '../../models/songscontroller.js';
 
 export class PlayQueue extends LitElement {
     static get styles() { return [ styles, button ] }
 
     practicesets = new PracticeSetsController(this);
+    songsController = new SongsController(this);
 
     render() {
         return template(this);
@@ -19,9 +21,9 @@ export class PlayQueue extends LitElement {
             let valid = note.length > 0;
             valid = valid && Note.flatNotations.indexOf(note.charAt(0).toUpperCase()) !== -1;
             return valid;
-        })
+        });
 
-        list = list.map(note => note.charAt(0).toUpperCase() + note.substring(1,note.length));
+        list = list.map(note => { return { chord: note.charAt(0).toUpperCase() + note.substring(1,note.length) }});
         this.practicesets.currentSet = list;
         event.target.value = '';
     }

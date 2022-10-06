@@ -6,6 +6,8 @@ export const Note = {
     /** cached keysignature lookup table */
     keys: {},
 
+    commonNotations: ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"],
+
     /**
      * incremental tones as sharp notation
      * @const

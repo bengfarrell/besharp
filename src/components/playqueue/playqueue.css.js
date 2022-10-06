@@ -4,15 +4,23 @@ export const styles = css`
   :host {
     display: flex;
     flex-direction: column;
-    margin-left: auto;
-    margin-right: auto;
     margin-top: 15px;
-    text-align: center;
+    width: 100%;
   }
   
-  #queue {
-    margin-top: 15px;
-    display: flex;
+  #button-holder {
+    margin-right: auto;
+    margin-left: auto;
+    display: inline-block;
+    padding: 20px;
+    max-width: 80%;
+  }
+  
+  #lyrics {
+    margin-right: auto;
+    margin-left: auto;
+    display: inline-block;
+    max-width: 80%;
   }
   
   hr {
@@ -41,12 +49,34 @@ export const styles = css`
     border-color: var(--darkish);
     color: var(--lightest);
   }
-
-  button#refresh {
-    width: 50px;
-    height: 50px;
+  
+  span.lyric {
+    background-color: var(--lightest);
+    padding: 3px;
+    margin: 3px;
+    display: inline-block;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    border-color: var(--green);
+    color: var(--green);
   }
-  button#refresh svg {
+  
+  span.lyric.current {
+    color: var(--darkish);
+    border-color: var(--darkish);
+    font-weight: 700;
+  }
+  
+  button span {
+    margin-top: -3px;
+    position: relative;
+    top: -6px;
+  }
+
+  button svg {
     width: 20px;
     height: 20px;
     margin-top: 5px;
@@ -55,6 +85,10 @@ export const styles = css`
   
   textarea {
     margin-top: 10px;
+    max-width: 90%;
+    width: 70%;
+    text-align: center;
+    align-self: center;
     height: 50px;
   }
 `;

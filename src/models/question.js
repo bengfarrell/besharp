@@ -25,17 +25,17 @@ export class Question {
     /** inversion label for the user to know what order to play */
     inversionLabel = 'any';
 
-    constructor(chordnotation, possibleinversions) {
-        this.chord = new Chord(chordnotation);
+    constructor(bar, possibleinversions) {
+        this.chord = new Chord(bar.chord);
         this.notes = this._getNotesWithInversion(this.chord, possibleinversions);
         if (possibleinversions && possibleinversions.length > 0) {
             this.enforceOrder = true;
         }
         if (possibleinversions === undefined) {
-            this.questionText = chordnotation;
+            this.questionText = bar.chord;
         }
         if (possibleinversions) {
-            this.questionText = `${chordnotation} in ${this.inversionLabel} position`;
+            this.questionText = `${bar.chord} in ${this.inversionLabel} position`;
         }
     }
 

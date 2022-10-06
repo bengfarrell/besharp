@@ -3,6 +3,7 @@ import '../panels/midisetup';
 import '../panels/micsetup';
 import '../panels/theoryoptions';
 import '../panels/metronome';
+import '../panels/playlist';
 import { App } from '../app/index.js';
 
 const panels = [
@@ -29,6 +30,12 @@ const panels = [
         name: 'Metronome',
         el: html`<bsharp-metronome-panel></bsharp-metronome-panel>`,
         open: false,
+    },
+    {
+        id: 5,
+        name: 'My Playlist',
+        el: html`<bsharp-playlist-panel></bsharp-playlist-panel>`,
+        open: false,
     }
 ]
 
@@ -47,7 +54,7 @@ export const template = (scope) => {
         <div class="panels-container padded-container">
         ${panels.map((panel) => html`
             <div class="panel ${panel.open ? 'open': ''}">
-                <div class="panel-header">
+                <div class="panel-header" @click=${() => scope.togglePanel(panel)}>
                     <span>${panel.name}</span>
                     <button class="toggle-open invisible" @click=${() => scope.togglePanel(panel)}>
                         <span></span>

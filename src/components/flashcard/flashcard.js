@@ -9,6 +9,7 @@ import { TimerController } from '../../models/timer';
 import { InputsController, Synth } from '../../inputs/index.js';
 import { PlayModeEvent } from './playmodeevent';
 import { App } from '../app';
+import { SongsController } from '../../models/songscontroller.js';
 
 export class FlashCard extends LitElement {
     static get styles() { return [ styles, type ] }
@@ -19,6 +20,7 @@ export class FlashCard extends LitElement {
         currentQuestion: { type: String },
         queuedQuestion: { type: String },
         mode: { type: String },
+        song: { type: String },
         currentAttempt: { type: Array },
         started: { type: Boolean },
         transition: { type: Boolean, reflect: true },
@@ -54,7 +56,10 @@ export class FlashCard extends LitElement {
         this.livePlayTimingMode = 'timer';
     }
 
+
+
     score = new ScoreModelController(this);
+    songsController = new SongsController(this);
     timer = new TimerController(this);
     practiceset = new PracticeSetsController(this);
     synth = new Synth(this);
@@ -78,6 +83,13 @@ export class FlashCard extends LitElement {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
                 question: this.currentQuestion ? this.currentQuestion : undefined }))
+        }
+
+        if (_changedProperties.has('song')) {
+            if (this.song) {
+                const song = this.songsController.findSong(this.song);
+
+            }
         }
     }
 
@@ -179,9 +191,14 @@ export class FlashCard extends LitElement {
 
     goNextQuestion() {
         this.resetTimer();
-        this.livePlayCountdown = this.livePlayBeatsPerChord;
         this.currentQuestion = this.practiceset.goNext(
             this.mode === App.LIVEPLAY_MODE ? true : false);
+        if (this.practiceset.currentBar.numBeats) {
+            this.livePlayCountdown = this.practiceset.currentBar.numBeats;
+            this.livePlayBeatsPerChord = this.practiceset.currentBar.numBeats;
+        } else {
+            this.livePlayCountdown = this.livePlayBeatsPerChord;
+        }
     }
 
     goCurrentQuestion() {

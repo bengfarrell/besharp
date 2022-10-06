@@ -17,6 +17,7 @@ export const styles = css`
     text-shadow: 0 1px 1px rgb(0 0 0 / 30%);
     background: var(--action-gradient);
     height: 40px;
+    cursor: pointer;
   }
   
   button.has-icon {
@@ -45,5 +46,28 @@ export const styles = css`
   button:active {
     background: #d3d3d3;
     color: #868686;
+  }
+  
+  button.tiny-circle {
+    border-radius: 50px !important;
+    font-size: 10px;
+    width: 20px !important;
+    height: 20px !important;
+    outline: none !important;
+    padding-top: 3px !important;
+  }
+
+  button.delete {
+    background: var(--red) !important;
+    border-radius: 50px !important;
+    font-size: 10px;
+    width: 20px !important;
+    height: 20px !important;
+    outline: none !important;
+    padding-top: 3px !important;
+  }
+
+  button.delete:hover {
+    background: var(--lightred) !important;
   }
 `;

@@ -495,7 +495,7 @@ export class Chord {
         var mod = notation;
         switch ( mod.substr(0,3) ) {
             case ChordConstants.AUGMENTED:
-                notes = augment(notes);
+                notes = this.augment(notes);
                 break;
 
             case ChordConstants.DIMINISHED:
@@ -504,7 +504,7 @@ export class Chord {
 
             case ChordConstants.SUSTAIN:
                 var param = parseInt(mod.charAt(3));
-                notes = sustain(notes, param);
+                notes = this.sustain(notes, param);
                 break;
         }
 
@@ -572,5 +572,3 @@ export class Chord {
         }
     }
 }
-
-window.Chord = Chord;

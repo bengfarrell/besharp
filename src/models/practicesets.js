@@ -59,11 +59,15 @@ export class PracticeSetsController {
         PracticeSetsController.listeners.splice(PracticeSetsController.listeners.indexOf(callback), 1);
     }
 
-    set currentSet(notations) {
-        PracticeSetsController.currentSet = notations;
+    set currentSet(bars) {
+        PracticeSetsController.currentSet = bars;
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
+    }
+
+    get currentBar() {
+        return PracticeSetsController.currentSet[PracticeSetsController.currentIndex];
     }
 
     get currentSet() {
@@ -75,7 +79,7 @@ export class PracticeSetsController {
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
-        PracticeSetsController.listeners.forEach(cb => cb({ type: 'setquestion' }));
+        // PracticeSetsController.listeners.forEach(cb => cb({ type: 'setquestion', index }));
     }
 
     get currentIndex() {
@@ -107,7 +111,10 @@ export class PracticeSetsController {
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
-        return new Question(q, ignoreInversions ? undefined : this.activeInversions);
+
+        const question = new Question(q, ignoreInversions ? undefined : this.activeInversions);
+        PracticeSetsController.listeners.forEach(cb => cb({ type: 'goquestion', index: this.currentIndex }));
+        return question;
     }
 
     previewNextQuestion() {
@@ -159,7 +166,7 @@ export class PracticeSetsController {
             pset.push( ...notes.map(note => note + '9'));
         }
 
-        return pset.sort((a, b) => 0.5 - Math.random()).splice(0, count);
+        return pset.sort((a, b) => 0.5 - Math.random()).splice(0, count).map(chord => { return { chord }; });
     }
 
     hostConnected() {
