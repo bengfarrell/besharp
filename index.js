@@ -26,7 +26,7 @@ var t$1;const i$1=globalThis.trustedTypes,s$1=i$1?i$1.createPolicy("lit-html",{c
 
 (function(factory){typeof define==="function"&&define.amd?define(factory):factory();})((function(){const Notes=["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"];function*noteGenerator(startNote){const pivot=Notes.indexOf(startNote);const layout=[...Notes.slice(pivot,Notes.length),...Notes.slice(0,pivot)];let octave=0;let first=true;while(true){for(let i=0;i<layout.length;i++){const note=layout[i];if(note==="C"&&!first){octave=octave+1;}yield {name:note,octave:octave};first=false;}}}const NaturalWidth=10;const SharpWidth=6;function sharpKey(note,octave,offset){return `<rect class="sharp-note note" data-note="${note}" data-octave="${octave}" x=${offset} y=1></rect>`}function naturalKey(note,octave,offset){return `<rect class="natural-note note" data-note="${note}" data-octave="${octave}" x=${offset} y=1></rect>`}class Piano extends HTMLElement{constructor(){super();this.root=this.attachShadow({mode:"open"});this.root.addEventListener("mousedown",event=>{this.handleClick(event,true);event.preventDefault();});this.root.addEventListener("mouseup",event=>{this.handleClick(event,false);event.preventDefault();});this.root.addEventListener("mouseout",event=>{this.handleClick(event,false);event.preventDefault();});this.root.innerHTML=`<style>${this.getCss()}</style><div>${this.getNoteSvg()}`;}static get observedAttributes(){return ["key-count","keyboard-layout","read-only"]}get config(){return {keyCount:parseInt(this.getAttribute("key-count")||"88"),keyboardLayout:this.getAttribute("keyboard-layout")||"A",readOnly:this.hasAttribute("read-only")}}connectedCallback(){}attributeChangedCallback(){this.root.innerHTML=`<style>${this.getCss()}</style><div>${this.getNoteSvg()}</div>`;}handleClick(event,down){if(this.config.readOnly){return}const target=event.target;if(target.tagName==="rect"){const note=event.target.getAttribute("data-note");const octave=parseInt(event.target.getAttribute("data-octave"));if(down){this.setNoteDown(note,octave);this.dispatchEvent(new CustomEvent("note-down",{detail:{note:note,octave:octave}}));}else {if(target.hasAttribute("data-depressed")){this.setNoteUp(note,octave);this.dispatchEvent(new CustomEvent("note-up",{detail:{note:note,octave:octave}}));}}}}setNoteDown(note,octave){const elem=this.root.querySelector(keySelector(note,octave));elem.classList.add("depressed");elem.setAttribute("data-depressed","data-depressed");}setNoteUp(note,octave){const elem=this.root.querySelector(keySelector(note,octave));elem.classList.remove("depressed");elem.removeAttribute("data-depressed");}getNoteSvg(){const noteCount=this.config.keyCount;const generator=noteGenerator(this.config.keyboardLayout);const notes=new Array(noteCount).fill(1).map(()=>generator.next().value);const naturalKeys=notes.filter(note=>!note.name.includes("#")).length;const lastKeySharp=notes[notes.length-1].name.includes("#");const totalWidth=naturalKeys*NaturalWidth+(lastKeySharp?SharpWidth/2:0)+2;return `<svg viewBox="0 0 ${totalWidth} 52" version="1.1" xmlns="http://www.w3.org/2000/svg">\n            ${this.getKeysForNotes(notes)}\n        </svg>`}getKeysForNotes(notes){let totalOffset=-NaturalWidth+1;const offsets=notes.map(note=>{const isSharp=note.name.includes("#");let thisOffset=0;if(isSharp){thisOffset=totalOffset+7;}else {totalOffset=totalOffset+NaturalWidth;thisOffset=totalOffset;}return {note:note.name,octave:note.octave,offset:thisOffset}});const naturalKeys=offsets.filter(pos=>!pos.note.includes("#")).map(pos=>naturalKey(pos.note,pos.octave,pos.offset));const sharpKeys=offsets.filter(pos=>pos.note.includes("#")).map(pos=>sharpKey(pos.note,pos.octave,pos.offset));return `<g>\n            ${naturalKeys}\n            ${sharpKeys}\n        </g>`}getCss(){return `\n        \n        :host {\n            --natural-key-color: #FFFFFF; \n            --natural-key-outline-color: #555555;\n            \n            --sharp-key-color: #555555;\n            --sharp-key-outline-color: #555555;\n            \n            --depressed-key-color: #808080;\n            --depressed-key-transform: scale(1, 0.95);\n        }\n        \n        :host {\n          display: block;\n        }\n        \n        .natural-note {\n          stroke: var(--natural-key-outline-color);\n          fill: var(--natural-key-color);\n          width: ${NaturalWidth}px;\n          height: 50px;\n        }\n        \n        .sharp-note {\n          stroke: var(--sharp-key-outline-color);\n          fill: var(--sharp-key-color);\n          width: ${SharpWidth}px;\n          height: 30px;\n        }\n        \n        .depressed {\n          fill: var(--depressed-key-color);\n          transform: var(--depressed-key-transform);\n        }\n        `}}const keySelector=(note,octave)=>`[data-note="${note}"][data-octave="${octave}"]`;customElements.define("piano-keys",Piano);}));
 
-const template$8 = (scope) => {
+const template$b = (scope) => {
     if (scope.started && !scope.transition) {
         return $`
             <div class="question-ui" id="play-controls">
@@ -65,7 +65,7 @@ const template$8 = (scope) => {
     }
 };
 
-const styles$b = r$2`
+const styles$e = r$2`
   :host {
     width: 100%;
     height: 100px;
@@ -161,7 +161,7 @@ const styles$b = r$2`
   }
 `;
 
-const styles$a = r$2`
+const styles$d = r$2`
   #logo {
     font-family: rhythm-two-solid, sans-serif;
     font-weight: 400;
@@ -307,6 +307,8 @@ const ChordConstants = {
 const Note = {
     /** cached keysignature lookup table */
     keys: {},
+
+    commonNotations: ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"],
 
     /**
      * incremental tones as sharp notation
@@ -1038,7 +1040,7 @@ class Chord {
         var mod = notation;
         switch ( mod.substr(0,3) ) {
             case ChordConstants.AUGMENTED:
-                notes = augment(notes);
+                notes = this.augment(notes);
                 break;
 
             case ChordConstants.DIMINISHED:
@@ -1047,7 +1049,7 @@ class Chord {
 
             case ChordConstants.SUSTAIN:
                 var param = parseInt(mod.charAt(3));
-                notes = sustain(notes, param);
+                notes = this.sustain(notes, param);
                 break;
         }
 
@@ -1116,8 +1118,6 @@ class Chord {
     }
 }
 
-window.Chord = Chord;
-
 class Question {
     /** chord for question */
     chord = undefined;
@@ -1143,17 +1143,17 @@ class Question {
     /** inversion label for the user to know what order to play */
     inversionLabel = 'any';
 
-    constructor(chordnotation, possibleinversions) {
-        this.chord = new Chord(chordnotation);
+    constructor(bar, possibleinversions) {
+        this.chord = new Chord(bar.chord);
         this.notes = this._getNotesWithInversion(this.chord, possibleinversions);
         if (possibleinversions && possibleinversions.length > 0) {
             this.enforceOrder = true;
         }
         if (possibleinversions === undefined) {
-            this.questionText = chordnotation;
+            this.questionText = bar.chord;
         }
         if (possibleinversions) {
-            this.questionText = `${chordnotation} in ${this.inversionLabel} position`;
+            this.questionText = `${bar.chord} in ${this.inversionLabel} position`;
         }
     }
 
@@ -1289,11 +1289,15 @@ class PracticeSetsController {
         PracticeSetsController.listeners.splice(PracticeSetsController.listeners.indexOf(callback), 1);
     }
 
-    set currentSet(notations) {
-        PracticeSetsController.currentSet = notations;
+    set currentSet(bars) {
+        PracticeSetsController.currentSet = bars;
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
+    }
+
+    get currentBar() {
+        return PracticeSetsController.currentSet[PracticeSetsController.currentIndex];
     }
 
     get currentSet() {
@@ -1305,7 +1309,7 @@ class PracticeSetsController {
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
-        PracticeSetsController.listeners.forEach(cb => cb({ type: 'setquestion' }));
+        // PracticeSetsController.listeners.forEach(cb => cb({ type: 'setquestion', index }));
     }
 
     get currentIndex() {
@@ -1337,7 +1341,10 @@ class PracticeSetsController {
         PracticeSetsController.hosts.forEach(host => {
             host.requestUpdate();
         });
-        return new Question(q, ignoreInversions ? undefined : this.activeInversions);
+
+        const question = new Question(q, ignoreInversions ? undefined : this.activeInversions);
+        PracticeSetsController.listeners.forEach(cb => cb({ type: 'goquestion', index: this.currentIndex }));
+        return question;
     }
 
     previewNextQuestion() {
@@ -1389,7 +1396,7 @@ class PracticeSetsController {
             pset.push( ...notes.map(note => note + '9'));
         }
 
-        return pset.sort((a, b) => 0.5 - Math.random()).splice(0, count);
+        return pset.sort((a, b) => 0.5 - Math.random()).splice(0, count).map(chord => { return { chord }; });
     }
 
     hostConnected() {
@@ -21413,8 +21420,121 @@ class PlayModeEvent extends Event {
     }
 }
 
+class SongsController {
+    static hosts = [];
+
+    static list = [ {
+        id: '_internal_',
+        name: 'Baby on Board',
+        bars: [
+            { numBeats: 8, chord: 'C', lyrics: 'Baby on'},
+            { numBeats: 8, chord: 'E7', lyrics: 'board'},
+            { numBeats: 8, chord: 'A', lyrics: 'How I\'ve'},
+            { numBeats: 8, chord: 'A7', lyrics: 'adored. That'},
+            { numBeats: 8, chord: 'Dm', lyrics: 'sign on my'},
+            { numBeats: 8, chord: 'A7', lyrics: 'car\'s window'},
+            { numBeats: 2, chord: 'Dm', lyrics: 'pa-'},
+            { numBeats: 2, chord: 'A7', lyrics: '-aa-'},
+            { numBeats: 2, chord: 'Dm', lyrics: '-ne. A'},
+            { numBeats: 8, chord: 'G', lyrics: 'bounce in my'},
+            { numBeats: 4, chord: 'G7', lyrics: 'step'},
+            { numBeats: 8, chord: 'C', lyrics: 'Loaded with'},
+            { numBeats: 4, chord: 'A7', lyrics: 'pep. Cause I\'m'},
+            { numBeats: 8, chord: 'D', lyrics: 'driving in the'},
+            { numBeats: 2, chord: 'D7', lyrics: 'car-'},
+            { numBeats: 2, chord: 'D9', lyrics: '-pool'},
+            { numBeats: 2, chord: 'G', lyrics: 'la-'},
+            { numBeats: 2, chord: 'Gdim', lyrics: '--'},
+            { numBeats: 2, chord: 'G7', lyrics: 'ne'},
+
+            { numBeats: 8, chord: 'C', lyrics: 'Call me a'},
+            { numBeats: 8, chord: 'E7', lyrics: 'square'},
+            { numBeats: 8, chord: 'A', lyrics: 'Friend, I don\'t'},
+            { numBeats: 8, chord: 'A7', lyrics: 'care. That'},
+            { numBeats: 8, chord: 'Dm', lyrics: 'little yellow'},
+            { numBeats: 8, chord: 'A7', lyrics: 'sign can\'t be'},
+            { numBeats: 2, chord: 'Dm', lyrics: 'ign--'},
+            { numBeats: 2, chord: 'A7', lyrics: '-o-'},
+            { numBeats: 2, chord: 'Dm', lyrics: '-red. I\'m telling'},
+
+            { numBeats: 8, chord: 'F', lyrics: 'you it\'s mighty'},
+            { numBeats: 8, chord: 'F#dim', lyrics: 'nice. Each trip\'s a'},
+            { numBeats: 4, chord: 'C', lyrics: 'trip to'},
+            { numBeats: 2, chord: 'B', lyrics: 'pa-'},
+            { numBeats: 2, chord: 'Bb', lyrics: '-ra-'},
+            { numBeats: 2, chord: 'A', lyrics: '-dise'},
+
+            { numBeats: 4, chord: 'A7', lyrics: 'With my'},
+            { numBeats: 2, chord: 'D7', lyrics: 'baby'},
+            { numBeats: 2, chord: 'G7', lyrics: '--'},
+            { numBeats: 2, chord: 'Gaug', lyrics: 'on'},
+            { numBeats: 2, chord: 'C', lyrics: 'board'},
+            { numBeats: 2, chord: 'G7', lyrics: '---'},
+            { numBeats: 2, chord: 'C', lyrics: '---'},
+        ]
+    }];
+
+    host;
+
+    constructor(host) {
+        (this.host = host).addController(this);
+        SongsController.hosts.push(host);
+    }
+
+    findSong(id) {
+        return SongsController.list.find(song => song.id === id);
+    }
+
+    findSongIndex(id) {
+        return SongsController.list.findIndex(song => song.id === id);
+    }
+
+    removeByID(guid) {
+        const indx = this.findSongIndex(guid);
+        SongsController.list.splice(indx, 1);
+        this.save();
+        SongsController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+    }
+
+    create() {
+        const song = {};
+        song.id = crypto.randomUUID();
+        song.bars = [];
+        SongsController.list.push(song);
+        SongsController.hosts.forEach(host => {
+            host.requestUpdate();
+        });
+        this.save();
+        return song;
+    }
+
+    get list() {
+        return SongsController.list;
+    }
+
+    hostConnected() {
+        this.host.requestUpdate();
+    }
+
+    save() {
+        SongsController.save();
+    }
+
+    static save() {
+        localStorage.setItem('bsharp-songs', JSON.stringify(SongsController.list));
+    }
+}
+
+const savedSongs = localStorage.getItem('bsharp-songs');
+if (savedSongs) {
+    SongsController.list = JSON.parse(savedSongs);
+    console.log('load songs', SongsController.list);
+}
+
 class FlashCard extends s {
-    static get styles() { return [ styles$b, styles$a ] }
+    static get styles() { return [ styles$e, styles$d ] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 
@@ -21422,6 +21542,7 @@ class FlashCard extends s {
         currentQuestion: { type: String },
         queuedQuestion: { type: String },
         mode: { type: String },
+        song: { type: String },
         currentAttempt: { type: Array },
         started: { type: Boolean },
         transition: { type: Boolean, reflect: true },
@@ -21457,7 +21578,10 @@ class FlashCard extends s {
         this.livePlayTimingMode = 'timer';
     }
 
+
+
     score = new ScoreModelController(this);
+    songsController = new SongsController(this);
     timer = new TimerController(this);
     practiceset = new PracticeSetsController(this);
     synth = new Synth(this);
@@ -21481,6 +21605,13 @@ class FlashCard extends s {
             this.dispatchEvent(new PlayModeEvent({
                 playing: _changedProperties.get('transition'),
                 question: this.currentQuestion ? this.currentQuestion : undefined }));
+        }
+
+        if (_changedProperties.has('song')) {
+            if (this.song) {
+                this.songsController.findSong(this.song);
+
+            }
         }
     }
 
@@ -21582,9 +21713,14 @@ class FlashCard extends s {
 
     goNextQuestion() {
         this.resetTimer();
-        this.livePlayCountdown = this.livePlayBeatsPerChord;
         this.currentQuestion = this.practiceset.goNext(
             this.mode === App.LIVEPLAY_MODE ? true : false);
+        if (this.practiceset.currentBar.numBeats) {
+            this.livePlayCountdown = this.practiceset.currentBar.numBeats;
+            this.livePlayBeatsPerChord = this.practiceset.currentBar.numBeats;
+        } else {
+            this.livePlayCountdown = this.livePlayBeatsPerChord;
+        }
     }
 
     goCurrentQuestion() {
@@ -21594,7 +21730,7 @@ class FlashCard extends s {
     }
 
     render() {
-        return template$8(this);
+        return template$b(this);
     }
 
     disconnectedCallback() {
@@ -21612,7 +21748,7 @@ class FlashCard extends s {
 
 customElements.define('bsharp-flashcard', FlashCard);
 
-const template$7 = (scope) => {
+const template$a = (scope) => {
     if (scope.mode === App.QUIZ_MODE) {
         return $`
             <div class="stats-container">
@@ -21653,7 +21789,7 @@ const template$7 = (scope) => {
     }
 };
 
-const styles$9 = r$2`
+const styles$c = r$2`
   :host {
     width: calc(100% - 30px);
     padding: 15px;
@@ -21694,7 +21830,7 @@ const styles$9 = r$2`
 `;
 
 class Score extends s {
-    static get styles() { return [ styles$9 ] }
+    static get styles() { return [ styles$c ] }
 
     static properties = {
         mode: { type: String },
@@ -21704,7 +21840,7 @@ class Score extends s {
     timer = new TimerController(this);
 
     render() {
-        return template$7(this);
+        return template$a(this);
     }
 
     onIncorrect() {
@@ -21717,7 +21853,7 @@ class Score extends s {
 
 customElements.define('bsharp-score', Score);
 
-const template$6 = (scope) => {
+const template$9 = (scope) => {
     if (scope.midi.inputs.length === 0) {
         return $`<span>Please connect a midi device <i>(works in Chrome/Edge only)</i></span>
         <br />
@@ -21732,7 +21868,7 @@ const template$6 = (scope) => {
     <button @click=${scope.handleMidiRefresh}>Refresh</button>`;
 };
 
-const styles$8 = r$2`
+const styles$b = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -21775,7 +21911,7 @@ const styles$8 = r$2`
   }
 `;
 
-const styles$7 = r$2`
+const styles$a = r$2`
   button {
     font-family: museo-sans, sans-serif;
     font-style: normal;
@@ -21792,6 +21928,7 @@ const styles$7 = r$2`
     text-shadow: 0 1px 1px rgb(0 0 0 / 30%);
     background: var(--action-gradient);
     height: 40px;
+    cursor: pointer;
   }
   
   button.has-icon {
@@ -21821,15 +21958,38 @@ const styles$7 = r$2`
     background: #d3d3d3;
     color: #868686;
   }
+  
+  button.tiny-circle {
+    border-radius: 50px !important;
+    font-size: 10px;
+    width: 20px !important;
+    height: 20px !important;
+    outline: none !important;
+    padding-top: 3px !important;
+  }
+
+  button.delete {
+    background: var(--red) !important;
+    border-radius: 50px !important;
+    font-size: 10px;
+    width: 20px !important;
+    height: 20px !important;
+    outline: none !important;
+    padding-top: 3px !important;
+  }
+
+  button.delete:hover {
+    background: var(--lightred) !important;
+  }
 `;
 
 class MidiSetup extends s {
-    static get styles() { return [ styles$8, styles$7 ] }
+    static get styles() { return [ styles$b, styles$a ] }
 
     midi = new MidiController(this);
 
     render() {
-        return template$6(this);
+        return template$9(this);
     }
 
     learnTrigger() {
@@ -21853,14 +22013,14 @@ class MidiSetup extends s {
 
 customElements.define('bsharp-midisetup-panel', MidiSetup);
 
-const template$5 = (scope) => {
+const template$8 = (scope) => {
     return $`<span>Sing the input?</span>
         <canvas width="200" height="50"}></canvas>
         <h3 id="note">${VoxController.note || ' - '}</h3>
         <button @click=${VoxController.toggleMicrophone}>${VoxController.active ? $`Stop Microphone` : $`Start Microphone`}</button>`;
 };
 
-const styles$6 = r$2`
+const styles$9 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -21884,14 +22044,14 @@ const styles$6 = r$2`
 `;
 
 class MicSetup extends s {
-    static get styles() { return [ styles$6, styles$7 ] }
+    static get styles() { return [ styles$9, styles$a ] }
 
     vox = new VoxController(this);
 
     isVisualizing = false;
 
     render() {
-        return template$5();
+        return template$8();
     }
 
     updated(_changedProperties) {
@@ -21934,7 +22094,7 @@ const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e
  * SPDX-License-Identifier: BSD-3-Clause
  */const o=e(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.et){this.et=new Set,void 0!==i.strings&&(this.st=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.st)||void 0===r?void 0:r.has(t))&&this.et.add(t);return this.render(s)}const e=i.element.classList;this.et.forEach((t=>{t in s||(e.remove(t),this.et.delete(t));}));for(const t in s){const i=!!s[t];i===this.et.has(t)||(null===(o=this.st)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.et.add(t)):(e.remove(t),this.et.delete(t)));}return b}});
 
-const template$4 = (scope) => {
+const template$7 = (scope) => {
     return $`
         <label>Music theory rules when generating random sets</label>
         ${renderOptions(scope, scope.sets.options)}`;
@@ -21963,7 +22123,7 @@ const renderOptions = (scope, opts) => {
     })}`;
 };
 
-const styles$5 = r$2`
+const styles$8 = r$2`
     :host {
       font-size: 12px;
       display: flex;
@@ -21993,7 +22153,7 @@ const styles$5 = r$2`
 `;
 
 class TheoryOptions extends s {
-    static get styles() { return [ styles$5 ] }
+    static get styles() { return [ styles$8 ] }
 
     sets = new PracticeSetsController(this);
 
@@ -22002,7 +22162,7 @@ class TheoryOptions extends s {
     }
 
     render() {
-        return template$4(this);
+        return template$7(this);
     }
 }
 
@@ -22012,7 +22172,7 @@ const timeSubdivisions = ["1m", "1n", "1n.", "2n", "2n.", "2t", "4n",  "4n.",  "
     "16n", "16n.", "16t", "32n", "32n.", "32t", "64n", "64n.", "64t", "128n", "128n.", "128t",
     "256n", "256n.", "256t" ];
 
-const template$3 = (scope) => {
+const template$6 = (scope) => {
     return $`
     <label>Beats per Minute</label>
     <input type="number" 
@@ -22037,7 +22197,7 @@ const template$3 = (scope) => {
     <button @click=${() => scope.synth.toggleMetronome()}>${scope.synth.isMetronomeRunning ? 'Stop' : 'Start'}</button>`;
 };
 
-const styles$4 = r$2`
+const styles$7 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22059,16 +22219,149 @@ const styles$4 = r$2`
 `;
 
 class Metronome extends s {
-    static get styles() { return [ styles$4, styles$7, styles$a ] }
+    static get styles() { return [ styles$7, styles$a, styles$d ] }
 
     synth = new Synth(this);
 
     render() {
-        return template$3(this);
+        return template$6(this);
     }
 }
 
 customElements.define('bsharp-metronome-panel', Metronome);
+
+const styles$6 = r$2`
+  :host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    width: 100%;
+  }
+  
+  button.edit {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    outline: 0 !important;
+    border-radius: 50px !important;
+    margin-right: 5px;
+  }
+
+  button.edit svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+    margin-top: 1px;
+  }
+  
+  #playlist {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #playlist .song {
+    cursor: pointer;
+    width: calc(100% - 20px);
+    display: flex;
+    padding: 10px;
+    border-bottom-style: solid;
+    border-bottom-color: var(--notsodark);
+    border-bottom-width: 1px;
+    align-items: center;
+  }
+
+  #playlist .song span {
+    flex: 1;
+    text-overflow: ellipsis;
+  }
+`;
+
+// edit by AlePio from https://thenounproject.com/browse/icons/term/edit/ Noun Project
+const editIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+ <path d="m526.82 199.31-96.156-96.156-257.48 257.53v96.156h96.156zm-96.133-45.918 45.922 45.922-19.273 19.297-45.922-45.922zm-44.402 44.402 45.922 45.922-152.49 152.48-45.918-45.941zm-177.59 223.51v-45.922l45.922 45.922z"/>
+</svg>`;
+
+const template$5 = (scope) => {
+    return $`
+        <div id="playlist">
+            ${scope.songsController.list.map(song => $`
+                <div class="song" @click=${() => scope.playSong(song.id)}>
+                    <span>${song.name}</span>
+                    <button class="edit" @click=${(e) => {
+                        scope.openSong(song.id);
+                        e.stopPropagation();
+                    }}>${editIcon}</button>    
+                    <button class="delete" 
+                        @click=${(e) => {
+                            const answer = window.confirm('Delete song?');
+                            if (answer) {
+                                scope.songsController.removeByID(song.id);
+                            }
+                            e.stopPropagation();
+                        }}>x</button></div>`)}
+                </div>
+                <br />
+                <p class="tiny-text">Click to play a song or...</p>
+                <button @click=${scope.handleAddNew}>Add New Song</button>`;
+};
+
+class ModalEvent extends Event {
+    static TRIGGER_MODAL_OPEN = 'triggerModalOpen';
+
+    static TRIGGER_MODAL_CLOSE = 'triggerModalClose';
+
+    modalName;
+    options;
+
+    constructor(modalname, options, type, initObj) {
+        super(type, initObj);
+        this.options = options;
+        this.modalName = modalname;
+    }
+}
+
+class PlaySongEvent extends Event {
+    static EVENT_TYPE = 'onPlaySong';
+
+    constructor(guid, initObj) {
+        super(PlaySongEvent.EVENT_TYPE, initObj);
+        this.guid = guid;
+    }
+}
+
+class Playlist extends s {
+    static get styles() { return [ styles$6, styles$a, styles$d ] }
+
+    songsController = new SongsController(this);
+    practiceSets = new PracticeSetsController(this);
+
+    openSong(guid) {
+        const e = new ModalEvent('song', { guid }, ModalEvent.TRIGGER_MODAL_OPEN, { bubbles: true, composed: true });
+        this.dispatchEvent(e);
+    }
+
+    playSong(guid) {
+        this.practiceSets.currentSet = this.songsController.findSong(guid).bars;
+        this.practiceSets.currentIndex = Math.min(0, this.practiceSets.currentIndex);
+        const e = new PlaySongEvent(guid, { bubbles: true, composed: true });
+        this.dispatchEvent(e);
+    }
+
+    handleAddNew() {
+        const e = new ModalEvent('song', {}, ModalEvent.TRIGGER_MODAL_OPEN, { bubbles: true, composed: true });
+        this.dispatchEvent(e);
+    }
+
+    render() {
+        return template$5(this);
+    }
+}
+
+customElements.define('bsharp-playlist-panel', Playlist);
 
 const panels = [
     {
@@ -22094,10 +22387,16 @@ const panels = [
         name: 'Metronome',
         el: $`<bsharp-metronome-panel></bsharp-metronome-panel>`,
         open: false,
+    },
+    {
+        id: 5,
+        name: 'My Playlist',
+        el: $`<bsharp-playlist-panel></bsharp-playlist-panel>`,
+        open: false,
     }
 ];
 
-const template$2 = (scope) => {
+const template$4 = (scope) => {
     return $`
         <div class="padded-container">
             <h1 id="logo">Be#Sharp</h1>
@@ -22112,7 +22411,7 @@ const template$2 = (scope) => {
         <div class="panels-container padded-container">
         ${panels.map((panel) => $`
             <div class="panel ${panel.open ? 'open': ''}">
-                <div class="panel-header">
+                <div class="panel-header" @click=${() => scope.togglePanel(panel)}>
                     <span>${panel.name}</span>
                     <button class="toggle-open invisible" @click=${() => scope.togglePanel(panel)}>
                         <span></span>
@@ -22126,7 +22425,7 @@ const template$2 = (scope) => {
         </div>`;
 };
 
-const styles$3 = r$2`
+const styles$5 = r$2`
   :host {
     color-scheme: dark;
   }
@@ -22183,6 +22482,7 @@ const styles$3 = r$2`
     padding: 4px;
     padding-left: 26px;
     position: relative;
+    cursor: pointer;
   }
 
   .panel-content {
@@ -22196,6 +22496,7 @@ const styles$3 = r$2`
   }
   
   button.toggle-open {
+    pointer-events: none;
     position: absolute; 
     margin: 0;
     width: 25px;
@@ -22206,7 +22507,7 @@ const styles$3 = r$2`
   }
   
   button.toggle-open span {
-    cursor: pointer;
+    pointer-events: none;
     display: inline-block;
     border-top: 8px solid var(--lightgreen);
     border-left: 6px solid transparent;
@@ -22240,7 +22541,7 @@ class SidePanel extends s {
     mode = App.QUIZ_MODE;
     timer = new TimerController(this);
 
-    static get styles() { return [ styles$3, styles$7, styles$a ] }
+    static get styles() { return [ styles$5, styles$a, styles$d ] }
 
     static properties = {
         started: { type: Boolean },
@@ -22248,7 +22549,7 @@ class SidePanel extends s {
     };
 
     render() {
-        return template$2(this);
+        return template$4(this);
     }
 
     handleStartClick(mode) {
@@ -22281,33 +22582,56 @@ const RefreshIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0
   <path d="m557.2 98.168c43.57 53.664 65.434 121.72 61.273 190.72-4.1641 68.996-34.047 133.93-83.754 181.96-49.707 48.039-115.62 75.695-184.72 77.5v-67.199c51.242-1.875 100.01-22.5 137.04-57.965 37.035-35.461 59.758-83.285 63.855-134.4 4.0977-51.109-10.719-101.95-41.633-142.85l-60.984 60.984c-3.4141 3.418-8.0469 5.3398-12.879 5.3398-4.832 0-9.4648-1.918-12.879-5.3359-3.4141-3.418-5.3281-8.0547-5.3242-12.887v-157.64c0-6.6836 2.6562-13.09 7.3828-17.816 4.7266-4.7266 11.133-7.3828 17.816-7.3828h157.64c4.832-0.003907 9.4688 1.9102 12.887 5.3242 3.418 3.4141 5.3359 8.0469 5.3359 12.879 0 4.832-1.9219 9.4648-5.3398 12.879zm-470.12 419.55c-3.418 3.4141-5.3398 8.0469-5.3398 12.879 0 4.832 1.918 9.4648 5.3359 12.879 3.418 3.4141 8.0547 5.3281 12.887 5.3242h157.64c6.6836 0 13.09-2.6562 17.816-7.3828 4.7266-4.7266 7.3828-11.133 7.3828-17.816v-157.64c0.003907-4.832-1.9102-9.4688-5.3242-12.887-3.4141-3.418-8.0469-5.3359-12.879-5.3359-4.832 0-9.4648 1.9219-12.879 5.3398l-60.984 60.984c-30.914-40.906-45.73-91.742-41.633-142.85 4.0977-51.113 26.82-98.938 63.855-134.4 37.035-35.465 85.801-56.09 137.04-57.965v-67.199c-69.102 1.8047-135.01 29.461-184.72 77.5-49.707 48.035-79.59 112.97-83.754 181.96-4.1602 69 17.703 137.05 61.273 190.72z"/>
 </svg>`;
 
-const template$1 = (scope) => {
+// replay by Alice Design from https://thenounproject.com/browse/icons/term/replay Noun Project
+const ReplayIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="m316.96 206.08c-14-8.3984-32.48 1.6797-32.48 18.48v148.4c0 16.801 17.922 26.879 32.48 18.48l122.64-73.922c13.441-8.3984 13.441-28 0-36.398z"/>
+  <path d="m561.68 169.12c-8.9609-14-27.441-19.039-41.441-10.078-14.559 8.9609-19.039 27.441-10.078 42.559 20.16 33.039 30.238 73.359 26.32 115.92-8.9609 90.16-82.879 161.84-173.6 168-109.76 7.2812-201.04-80.078-199.92-188.72 1.1211-100.8 83.441-183.68 183.68-185.36 5.6016 0 10.641 0 16.238 0.55859v23.52c0 9.5195 10.641 15.121 18.48 10.078l87.359-54.32c7.2812-4.4805 7.2812-15.68 0-20.16l-87.914-55.441c-7.8398-5.0391-18.48 0.55859-18.48 10.078v24.641h-12.32c-142.8 0-258.16 121.52-246.96 266.56 8.9609 121.52 106.96 219.52 227.92 228.48 145.04 10.641 267.12-104.16 267.12-246.96-0.003906-47.602-13.441-91.84-36.402-129.36z"/>
+</svg>
+`;
+
+const template$3 = (scope) => {
     return $`
-    <div id="queue">
-        ${scope.practicesets.currentSet.map((chord, index) => 
-            $`<span @click=${() => scope.practicesets.currentIndex = index}
-                    class="chord ${scope.practicesets.currentIndex === index ? 'current' : ''}">${chord}</span>`)}
-        <button class="has-icon" id="refresh" @click=${() => { 
-            scope.practicesets.generateRandomSet(); 
-            scope.practicesets.currentIndex = 0; 
-        }}>${RefreshIcon}</button>
+    <div id="lyrics">
+        ${scope.practicesets.currentSet.map((bar, index) =>
+                (scope.practicesets.currentIndex > index - 10 && scope.practicesets.currentIndex < index + 10) ? $`
+            <span @click=${() => scope.practicesets.currentIndex = index} 
+                  class="lyric ${scope.practicesets.currentIndex === index ? 'current' : ''}">
+                ${bar.lyrics} <br />${bar.chord}</span>` : undefined)}
+    </div>
+    
+    <div id="button-holder">
+        <button class="has-icon" id="refresh" @click=${() => {
+            scope.practicesets.generateRandomSet();
+            scope.practicesets.currentIndex = Math.min(0, scope.practicesets.currentIndex); // could be -1
+        }}>${RefreshIcon} <span>Randomize Chords</span></button>
+        <button class="has-icon" id="replay" @click=${() => {
+            scope.practicesets.currentIndex = Math.min(0, scope.practicesets.currentIndex); // could be -1 
+        }}>${ReplayIcon} <span>Replay Song</span></button> 
     </div>
     <textarea placeholder="Use your own chords by adding here \rexample: C#7 E Gm" @change=${scope.onChangeCustomSet}></textarea>`;
 };
 
-const styles$2 = r$2`
+const styles$4 = r$2`
   :host {
     display: flex;
     flex-direction: column;
-    margin-left: auto;
-    margin-right: auto;
     margin-top: 15px;
-    text-align: center;
+    width: 100%;
   }
   
-  #queue {
-    margin-top: 15px;
-    display: flex;
+  #button-holder {
+    margin-right: auto;
+    margin-left: auto;
+    display: inline-block;
+    padding: 20px;
+    max-width: 80%;
+  }
+  
+  #lyrics {
+    margin-right: auto;
+    margin-left: auto;
+    display: inline-block;
+    max-width: 80%;
   }
   
   hr {
@@ -22336,12 +22660,34 @@ const styles$2 = r$2`
     border-color: var(--darkish);
     color: var(--lightest);
   }
-
-  button#refresh {
-    width: 50px;
-    height: 50px;
+  
+  span.lyric {
+    background-color: var(--lightest);
+    padding: 3px;
+    margin: 3px;
+    display: inline-block;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    border-color: var(--green);
+    color: var(--green);
   }
-  button#refresh svg {
+  
+  span.lyric.current {
+    color: var(--darkish);
+    border-color: var(--darkish);
+    font-weight: 700;
+  }
+  
+  button span {
+    margin-top: -3px;
+    position: relative;
+    top: -6px;
+  }
+
+  button svg {
     width: 20px;
     height: 20px;
     margin-top: 5px;
@@ -22350,17 +22696,22 @@ const styles$2 = r$2`
   
   textarea {
     margin-top: 10px;
+    max-width: 90%;
+    width: 70%;
+    text-align: center;
+    align-self: center;
     height: 50px;
   }
 `;
 
 class PlayQueue extends s {
-    static get styles() { return [ styles$2, styles$7 ] }
+    static get styles() { return [ styles$4, styles$a ] }
 
     practicesets = new PracticeSetsController(this);
+    songsController = new SongsController(this);
 
     render() {
-        return template$1(this);
+        return template$3(this);
     }
 
     onChangeCustomSet(event) {
@@ -22370,13 +22721,447 @@ class PlayQueue extends s {
             return valid;
         });
 
-        list = list.map(note => note.charAt(0).toUpperCase() + note.substring(1,note.length));
+        list = list.map(note => { return { chord: note.charAt(0).toUpperCase() + note.substring(1,note.length) }});
         this.practicesets.currentSet = list;
         event.target.value = '';
     }
 }
 
 customElements.define('bsharp-playqueue', PlayQueue);
+
+const styles$3 = r$2`
+  :host {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+  
+  #modal {
+    position: absolute;
+    display: flex;
+    border-radius: 8px;
+    outline-width: 3px;
+    outline-style: double;
+    outline-color: var(--darkish);
+    outline-offset: -10px;
+    background-color: var(--light);
+
+    left: 10%;
+    right: 10%;
+    top: 10%;
+    bottom: 10%;
+  }
+  
+  #click-cover {
+    background-color: black;
+    opacity: .75;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+  }
+  
+  button {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    width: 40px !important;
+    height: 40px !important;
+    outline: none !important;
+  }
+
+  ::slotted(*) {
+    width: 100%;
+    height: 100%;
+  }
+
+`;
+
+const template$2 = (scope) => {
+    return $`
+        <div id="click-cover"></div>
+        <div id="modal">
+            <button @click=${scope.triggerClose}>x</button>
+            <slot></slot>
+        </div>`;
+};
+
+class Modal extends s {
+    static get styles() { return [ styles$3, styles$a, styles$d ] }
+
+    static properties = {
+        modal: { type: String },
+    };
+
+    render() {
+        return template$2(this);
+    }
+
+    triggerClose() {
+        const e = new ModalEvent(this.modal, {}, ModalEvent.TRIGGER_MODAL_CLOSE, { bubbles: true, composed: true });
+        this.dispatchEvent(e);
+    }
+}
+
+customElements.define('bsharp-modal', Modal);
+
+// copy by Yana Marudova https://thenounproject.com/browse/icons/term/copy/ Noun Project
+const copyIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="m439.6 212.8h-22.402v-22.402c0-8.9102-3.5391-17.457-9.8398-23.758s-14.848-9.8398-23.758-9.8398h-123.2c-8.9102 0-17.457 3.5391-23.758 9.8398s-9.8398 14.848-9.8398 23.758v123.2c0 8.9102 3.5391 17.457 9.8398 23.758s14.848 9.8398 23.758 9.8398h22.398v22.398l0.003906 0.003906c0 8.9102 3.5391 17.457 9.8398 23.758s14.848 9.8398 23.758 9.8398h123.2c8.9102 0 17.457-3.5391 23.758-9.8398s9.8398-14.848 9.8398-23.758v-123.2c0-8.9102-3.5391-17.457-9.8398-23.758s-14.848-9.8398-23.758-9.8398zm-190.4 100.8v-123.2c0-6.1836 5.0156-11.199 11.199-11.199h123.2c2.9688 0 5.8164 1.1797 7.918 3.2812 2.1016 2.1016 3.2812 4.9492 3.2812 7.918v22.398l-78.402 0.003906c-8.9102 0-17.457 3.5391-23.758 9.8398s-9.8398 14.848-9.8398 23.758v78.402h-22.402c-6.1836 0-11.199-5.0156-11.199-11.199zm201.6 56c0 2.9688-1.1797 5.8164-3.2812 7.918-2.1016 2.1016-4.9492 3.2812-7.918 3.2812h-123.2c-6.1836 0-11.199-5.0156-11.199-11.199v-123.2c0-6.1836 5.0156-11.199 11.199-11.199h123.2c2.9688 0 5.8164 1.1797 7.918 3.2812 2.1016 2.1016 3.2812 4.9492 3.2812 7.918z"/>
+  <path d="m411.6 296.8h-22.402v-22.402c0-6.1836-5.0117-11.199-11.199-11.199s-11.199 5.0156-11.199 11.199v22.398l-22.402 0.003906c-6.1836 0-11.199 5.0117-11.199 11.199s5.0156 11.199 11.199 11.199h22.398v22.398l0.003906 0.003906c0 6.1836 5.0117 11.199 11.199 11.199s11.199-5.0156 11.199-11.199v-22.402h22.402c6.1836 0 11.199-5.0117 11.199-11.199s-5.0156-11.199-11.199-11.199z"/>
+</svg>`;
+
+// drag by shashank singh from https://thenounproject.com/browse/icons/term/drag/ Noun Project
+const dragHandleIcon = y`<svg width="700pt" height="700pt" version="1.1" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="m279.78 85.039c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54688-3.8828 0.76563-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54688 5.7969-0.76563-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54688 5.7969 0.76563-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54687 3.8828 0.76562 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54687 3.8828-0.76562 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54687-5.7969 0.76562 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54687-5.7969-0.76562 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54688-3.8828-0.76563-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054688 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54687 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10938 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054687-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+  <path d="m279.78 280c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54688-3.8828 0.76563-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54688 5.7969-0.76562-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54688 5.7969 0.76562-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54687 3.8828 0.76562 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54687 3.8828-0.76562 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54688-5.7969 0.76562 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54688-5.7969-0.76562 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54688-3.8828-0.76563-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054688 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54688 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10938 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054687-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+  <path d="m279.78 474.96c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54688-3.8828 0.76563-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54687 5.7969-0.76562-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54687 5.7969 0.76562-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54687 3.8828 0.76562 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54687 3.8828-0.76562 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54688-5.7969 0.76563 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54688-5.7969-0.76563 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54688-3.8828-0.76563-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054688 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54688 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10937 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054687-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+  <path d="m490.33 85.039c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54687-3.8828 0.76562-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54688 5.7969-0.76563-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54688 5.7969 0.76563-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54688 3.8828 0.76563 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54688 3.8828-0.76563 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54687-5.7969 0.76562 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54687-5.7969-0.76562 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54687-3.8828-0.76562-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054687 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54687 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10938 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054688-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+  <path d="m490.33 280c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54687-3.8828 0.76562-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54688 5.7969-0.76562-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54688 5.7969 0.76562-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54688 3.8828 0.76563 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54688 3.8828-0.76563 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54688-5.7969 0.76562 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54688-5.7969-0.76562 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54687-3.8828-0.76562-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054687 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54688 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10938 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054688-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+  <path d="m490.33 474.96c0 2.5703-0.16406 5.0859-0.49219 7.6016 0.27344-1.9141 0.54687-3.8828 0.76562-5.7969-0.71094 4.9219-1.9688 9.625-3.8281 14.219 0.71094-1.75 1.4766-3.5 2.1875-5.25-1.9688 4.6484-4.5391 9.0234-7.6016 13.07 1.1484-1.4766 2.2969-2.9531 3.4453-4.4297-2.9531 3.7734-6.3438 7.1641-10.117 10.117 1.4766-1.1484 2.9531-2.2969 4.4297-3.4453-4.0469 3.0625-8.3672 5.6328-13.07 7.6016 1.75-0.71094 3.5-1.4766 5.25-2.1875-4.5938 1.8594-9.2969 3.1172-14.219 3.8281 1.9141-0.27344 3.8828-0.54687 5.7969-0.76562-5.0859 0.65625-10.117 0.65625-15.203 0 1.9141 0.27344 3.8828 0.54687 5.7969 0.76562-4.9219-0.71094-9.625-1.9688-14.219-3.8281 1.75 0.71094 3.5 1.4766 5.25 2.1875-4.6484-1.9688-9.0234-4.5391-13.07-7.6016 1.4766 1.1484 2.9531 2.2969 4.4297 3.4453-3.7734-2.9531-7.1641-6.3438-10.117-10.117 1.1484 1.4766 2.2969 2.9531 3.4453 4.4297-3.0625-4.0469-5.6328-8.3672-7.6016-13.07 0.71094 1.75 1.4766 3.5 2.1875 5.25-1.8594-4.5938-3.1172-9.2969-3.8281-14.219 0.27344 1.9141 0.54688 3.8828 0.76563 5.7969-0.65625-5.0859-0.65625-10.117 0-15.203-0.27344 1.9141-0.54688 3.8828-0.76563 5.7969 0.71094-4.9219 1.9688-9.625 3.8281-14.219-0.71094 1.75-1.4766 3.5-2.1875 5.25 1.9688-4.6484 4.5391-9.0234 7.6016-13.07-1.1484 1.4766-2.2969 2.9531-3.4453 4.4297 2.9531-3.7734 6.3438-7.1641 10.117-10.117-1.4766 1.1484-2.9531 2.2969-4.4297 3.4453 4.0469-3.0625 8.3672-5.6328 13.07-7.6016-1.75 0.71094-3.5 1.4766-5.25 2.1875 4.5938-1.8594 9.2969-3.1172 14.219-3.8281-1.9141 0.27344-3.8828 0.54688-5.7969 0.76563 5.0859-0.65625 10.117-0.65625 15.203 0-1.9141-0.27344-3.8828-0.54688-5.7969-0.76563 4.9219 0.71094 9.625 1.9688 14.219 3.8281-1.75-0.71094-3.5-1.4766-5.25-2.1875 4.6484 1.9688 9.0234 4.5391 13.07 7.6016-1.4766-1.1484-2.9531-2.2969-4.4297-3.4453 3.7734 2.9531 7.1641 6.3438 10.117 10.117-1.1484-1.4766-2.2969-2.9531-3.4453-4.4297 3.0625 4.0469 5.6328 8.3672 7.6016 13.07-0.71094-1.75-1.4766-3.5-2.1875-5.25 1.8594 4.5938 3.1172 9.2969 3.8281 14.219-0.27344-1.9141-0.54687-3.8828-0.76562-5.7969 0.27344 2.5156 0.4375 5.0312 0.49219 7.6016 0.054687 5.6328 2.4062 11.484 6.3984 15.477 3.7734 3.7734 10.008 6.6719 15.477 6.3984 11.812-0.54688 21.93-9.625 21.875-21.875-0.10938-15.422-4.5938-31.555-13.617-44.188-5.6328-7.875-11.594-13.891-19.25-19.688-6.1797-4.7031-13.07-7.9297-20.289-10.609-29.148-10.773-65.461-1.0938-85.148 23.023-6.125 7.5469-10.5 14.82-14.109 23.844-2.9531 7.3828-4.3203 15.148-4.9219 23.023-1.2578 15.477 3.0078 31.992 11.047 45.172 7.7656 12.797 19.578 24.172 33.359 30.297 4.1562 1.8594 8.3672 3.7188 12.797 4.9219 4.7578 1.3672 9.6797 1.9688 14.547 2.5156 7.9844 0.92969 16.078 0.10937 23.953-1.4766 16.023-3.2266 32.102-12.742 42.438-25.43 6.6172-8.0938 11.266-16.078 14.93-25.867 3.0078-8.0938 4.2656-17.008 4.3203-25.594 0.054688-11.43-10.117-22.422-21.875-21.875-11.977 0.60156-21.875 9.6797-21.93 21.93z"/>
+</svg>
+`;
+
+const template$1 = (scope) => {
+    return $`
+        <h1>Create a song</h1>
+        <span>to practice in live playback mode</span>
+        
+        <input type="text" id="title-input" placeholder="My Song Name" value=${scope.songName}
+               @change=${(event) => scope.songName = event.target.value } />
+        <div id="segment-add-container">
+            <select @change=${(event) => scope.chord = event.target.value }>
+                ${Note.commonNotations.map(note =>
+                        $`<option ?selected=${note === scope.chord}>${note}</option>`
+                )}
+            </select>
+            <select @change=${(event) => scope.chordMod = event.target.value }>
+                ${Object.values(ChordConstants).map(mod =>
+                        $`<option ?selected=${mod === scope.chordMod}>${mod}</option>`
+                )}
+            </select>
+            <span>for</span>
+            <input @change=${(event) => scope.numBeats = parseInt(event.target.value) } 
+                   type="number" value=${scope.numBeats} />
+            <label>Beats</label>
+        </div>
+        <textarea @change=${(event) => scope.lyrics = event.target.value }
+                placeholder="Add lyrics if you'd like them displayed with the chords"></textarea>
+        <button class="add-bar" @click=${() => scope.addBar()}>+</button>
+        
+        <div id="song-line-container">
+            ${scope.songs.findSong(scope.songID)?.bars.map((bar, index) => {
+                const chord = new Chord(bar.chord).root;
+                const chordMod = bar.chord.substring(chord.length, bar.chord.length);
+                return $`<div class="song-bar" 
+                                 data-index=${index}
+                                 @dragend=${scope.handleDragEnd}
+                                 @dragover=${scope.handleDragOver}
+                                 @dragstart=${scope.handleDragStart}
+                                 @pointerdown=${(e) => {
+                                     if (e.target.classList.contains('drag-handle')) {
+                                         e.currentTarget.setAttribute('draggable', true);
+                                     }
+                                 }}
+                                 @pointerup=${(e) => {
+                                     e.currentTarget.setAttribute('draggable', false);
+                                 }}>
+                    <span class="drag-handle">${dragHandleIcon}</span>
+  
+                    <select @change=${(event) => {
+                            bar.chord = event.target.value + chordMod;
+                            scope.songs.save();
+                        }}>
+                            ${Note.commonNotations.map(note =>
+                                    $`<option ?selected=${note === chord}>${note}</option>`
+                            )}
+                    </select>
+                    <select @change=${(event) => { 
+                            bar.chord = chord + event.target.value;
+                            scope.songs.save();
+                        }}>
+                            ${Object.values(ChordConstants).map(mod =>
+                                    $`<option ?selected=${mod === chordMod}>${mod}</option>`
+                            )}
+                    </select>
+                    <label class="beats-field">x</label><input class="beats-field" @change=${(event) => { 
+                        bar.numBeats = parseInt(event.target.value);
+                        scope.songs.save();
+                        }} type="number" value=${bar.numBeats} />
+                    <input class="lyrics-field" @change=${(event) => {
+                        bar.lyrics = event.target.value;
+                        scope.songs.save();
+                    }} type="text" value=${bar.lyrics} />
+                    <button class="copy tiny-circle" @click=${() => { scope.copyBar(index); }}>${copyIcon}</button>
+                    <button class="delete" @click=${() => { scope.deleteBar(index); }}>x</button>
+                </div>`;
+            })}
+        </div>`
+
+};
+
+const styles$2 = r$2`
+  :host {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+  }
+  
+  h1 {
+    margin-bottom: 0;
+  }
+  
+  button.add-bar {
+    font-weight: 700 !important;
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: 15px;
+    border-radius: 50px !important;
+    margin-top: 20px;
+    z-index: 1;
+    outline-color: var(--light) !important;
+    outline-width: 1px !important;
+    outline-offset: 0 !important;
+  }
+  
+  #segment-add-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5px;
+    margin-top: 15px;
+    width: calc(100% - 40px);
+  }
+  
+  textarea {
+    width: calc(100% - 40px);
+    max-width: calc(100% - 40px);
+    margin-top: 10px;
+  }
+  
+  input#title-input {
+    width: 50%;
+    margin-top: 15px;
+  }
+  
+  #segment-add-container select {
+    height: 40px;
+  }
+
+  #segment-add-container input {
+    width: 40px;
+    height: 34px;
+  }
+  
+  #song-line-container {
+    background-color: var(--darkish);
+    flex: 1;
+    width: calc(100% - 40px);
+    margin-bottom: 20px;
+    margin-top: -10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-top: 11px;
+  }
+
+  .song-bar {
+    display: flex;
+    color: var(--light);
+    align-items: center;
+    border-bottom-style: solid;
+    border-bottom-color: var(--notsodark);
+    border-bottom-width: 1px;
+    padding: 10px;
+    user-select: none;
+  }
+
+  .song-bar .drag-handle {
+    cursor: ns-resize;
+  }
+
+  .song-bar .drag-handle svg {
+    height: 20px;
+    width: 20px;
+    margin-top: 8px;
+    fill: var(--kindalight);
+    pointer-events: none;
+  }
+
+  .song-bar input,
+  .song-bar select {
+    color: var(--lighter);
+    background-color: var(--notsodark);
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--darkish);
+  }
+
+  .song-bar label.beats-field {
+    font-weight: 700;
+    margin-left: 15px;
+    margin-right: 5px;
+  }
+  
+  .song-bar input.beats-field {
+    width: 25px;
+    height: 24px;
+  }
+
+  .song-bar input.lyrics-field {
+    flex: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    height: 24px;
+  }
+
+  .song-bar select {
+    height: 30px;
+  }
+
+  .song-bar span.lyrics {
+    font-weight: 100;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  button.copy {
+    margin-right: 5px;
+  }
+
+  button.copy svg {
+    width: 30px;
+    height: 30px;
+    margin-left: -10px;
+    margin-top: -5px;
+    fill: white;
+  }
+`;
+
+class Song extends s {
+    static get styles() { return [ styles$2, styles$a, styles$d ] }
+
+    static properties = {
+        songName: { type: String },
+        chord: { type: String },
+        chordMod: { type: String },
+        lyrics: { type: String },
+        numBeats: { type: Number },
+        guid: { type: String },
+        editIndex: { type: Number }
+    };
+
+    songs = new SongsController(this);
+
+    dragging = undefined;
+
+    songID = undefined;
+
+    constructor() {
+        super();
+        this.numBeats = 16;
+        this.chord = 'C';
+        this.chordMod = 'maj';
+        this.editIndex = -1;
+    }
+
+    willUpdate(_changedProperties) {
+        super.willUpdate(_changedProperties);
+        if (_changedProperties.has('guid')) {
+            if (this.guid) {
+                const song = this.songs.findSong(this.guid);
+                this.songName = song.name;
+                this.songID = song.id;
+            }
+        }
+    }
+
+    handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (e.currentTarget === this.dragging.lastOver) {
+            return false;
+        }
+        this.dragging.lastOver = e.currentTarget;
+
+        const dragFromIndex = parseInt(this.dragging.target.dataset.index);
+        const dragToIndex = parseInt(e.currentTarget.dataset.index);
+        const bars = this.dragging.originalOrder.slice();
+        bars.splice(
+            dragToIndex, 0,
+            bars.splice(dragFromIndex, 1)[0]);
+        this.songs.findSong(this.songID).bars = bars;
+        this.requestUpdate();
+    }
+
+    handleDragEnd(e) {
+        e.preventDefault();
+        this.dragging = undefined;
+        this.songs.save();
+    }
+
+    handleDragStart(e) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', null);
+        this.dragging = {
+            target: e.currentTarget,
+            originalOrder: this.songs.findSong(this.songID).bars.slice()
+        };
+    }
+
+    copyBar(index) {
+        const bar = Object.assign({}, this.songs.findSong(this.songID).bars[index]);
+        this.songs.findSong(this.songID).bars.push(bar);
+        this.songs.save();
+        this.requestUpdate();
+        requestAnimationFrame(() => {
+            const scrollcontainer = this.shadowRoot.querySelector('#song-line-container');
+            scrollcontainer.scrollTo({
+                behavior: 'smooth',
+                top: scrollcontainer.scrollHeight });
+        });
+    }
+
+    deleteBar(index) {
+        this.songs.findSong(this.songID).bars.splice(index, 1);
+        this.songs.save();
+        this.requestUpdate();
+    }
+
+    addBar() {
+        let song = this.songs.findSong(this.songID);
+        if (!song) {
+            song = this.songs.create();
+            song.name = this.songName;
+            this.songID = song.id;
+        }
+        song.bars.push( {
+            chord: this.chord + this.chordMod,
+            lyrics: this.lyrics,
+            numBeats: this.numBeats
+        });
+
+        this.songs.save();
+        requestAnimationFrame(() => {
+            const scrollcontainer = this.shadowRoot.querySelector('#song-line-container');
+            scrollcontainer.scrollTo({
+                behavior: 'smooth',
+                top: scrollcontainer.scrollHeight });
+        });
+        this.requestUpdate();
+    }
+
+    render() {
+        return template$1(this);
+    }
+}
+
+customElements.define('bsharp-song-panel', Song);
 
 const template = (scope) => {
     return $`
@@ -22390,6 +23175,7 @@ const template = (scope) => {
                     $`<bsharp-flashcard 
                             ?started=${scope.started}
                             mode=${scope.mode}
+                            song=${scope.song}
                             @incorrect=${scope.onIncorrect}
                             @playModeChange=${scope.handlePlayModeChange}>
                         </bsharp-flashcard>` 
@@ -22400,10 +23186,22 @@ const template = (scope) => {
                         @note-down=${(e) => VirtualKeyboardController.onNoteDown(e.detail.note, e.detail.octave)} 
                         @note-up=${(e) => VirtualKeyboardController.onNoteUp(e.detail.note, e.detail.octave)}>
             </piano-keys>
-            <bsharp-playqueue></bsharp-playqueue>
+            <bsharp-playqueue song=${scope.song}></bsharp-playqueue>
             ${scope.mode !== App.NO_MODE ?
         $`<bsharp-score mode=${scope.mode}></bsharp-score>` : undefined}
-        </div>`;
+        </div>
+        ${scope.currentModal ? $`<bsharp-modal 
+                modal=${scope.currentModal}>${renderModal(scope.currentModal, scope.currentModalOptions)}</bsharp-modal>` : undefined}
+    `;
+};
+
+const renderModal = (modal, opts) => {
+    switch (modal) {
+        case 'song':
+            return $`<bsharp-song-panel guid=${opts.guid} ></bsharp-song-panel>`;
+        default:
+            return undefined;
+    }
 };
 
 const styles$1 = r$2`
@@ -22413,7 +23211,7 @@ const styles$1 = r$2`
   }
   
   div {
-    width: 100%;
+    width: calc(100% - 230px);
     display: flex;
     flex-direction: column;
   }
@@ -22448,8 +23246,7 @@ const styles$1 = r$2`
     outline-offset: -20px;
     color: var(--light);
     font-weight: 100;
-  }
-`;
+  }`;
 
 const styles = r$2`
   :host {
@@ -22464,12 +23261,13 @@ const styles = r$2`
     --green: #4e7d0e;
     --lightgreen: #7db72f;
 
+    --lightred: #c54a4a;
     --red: #771414;
 
     --action-color: var(--green);
     --action-gradient: linear-gradient(to left top, var(--lightgreen) 0%, var(--green) 100%);
     --action-hover: linear-gradient(to left top, var(--green) 0%, var(--darkgreen) 100%);
-    
+
     --incorrect-color: var(--red);
   }`;
 
@@ -22484,7 +23282,9 @@ class App extends s {
 
     static properties = {
         started: { type: Boolean },
-        mode: { type: String }
+        mode: { type: String },
+        song: { type: String },
+        currentModal: { type: String }
     };
 
     inputs = new InputsController(this);
@@ -22495,6 +23295,21 @@ class App extends s {
         this.mode = App.NO_MODE;
         this.disableInput = false;
         this.notes = [];
+        this.currentModal = undefined;
+        this.currentModalOptions = undefined;
+        this.addEventListener(ModalEvent.TRIGGER_MODAL_OPEN, e => {
+            this.currentModal = e.modalName;
+            this.currentModalOptions = e.options;
+        });
+        this.addEventListener(ModalEvent.TRIGGER_MODAL_CLOSE, e => {
+            this.currentModal = undefined;
+            this.currentModalOptions = undefined;
+        });
+        this.addEventListener(PlaySongEvent.EVENT_TYPE, e => {
+            this.song = e.guid;
+            this.mode = App.LIVEPLAY_MODE;
+            this.started = true;
+        });
     }
 
     firstUpdated(_changedProperties) {
