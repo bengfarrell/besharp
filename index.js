@@ -65,7 +65,7 @@ const template$b = (scope) => {
     }
 };
 
-const styles$e = r$2`
+const styles$b = r$2`
   :host {
     width: 100%;
     height: 100px;
@@ -158,19 +158,6 @@ const styles$e = r$2`
   
   select {
     width: 125px;
-  }
-`;
-
-const styles$d = r$2`
-  #logo {
-    font-family: rhythm-two-solid, sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  }
-  
-  .tiny-text {
-    font-size: 10px;
-    font-weight: 100;
   }
 `;
 
@@ -21534,7 +21521,7 @@ if (savedSongs) {
 }
 
 class FlashCard extends s {
-    static get styles() { return [ styles$e, styles$d ] }
+    static get styles() { return [ styles$b, /* type */] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 
@@ -21789,7 +21776,7 @@ const template$a = (scope) => {
     }
 };
 
-const styles$c = r$2`
+const styles$a = r$2`
   :host {
     width: calc(100% - 30px);
     padding: 15px;
@@ -21830,7 +21817,7 @@ const styles$c = r$2`
 `;
 
 class Score extends s {
-    static get styles() { return [ styles$c ] }
+    static get styles() { return [ styles$a ] }
 
     static properties = {
         mode: { type: String },
@@ -21868,7 +21855,7 @@ const template$9 = (scope) => {
     <button @click=${scope.handleMidiRefresh}>Refresh</button>`;
 };
 
-const styles$b = r$2`
+const styles$9 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -21911,80 +21898,8 @@ const styles$b = r$2`
   }
 `;
 
-const styles$a = r$2`
-  button {
-    font-family: museo-sans, sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 15px;
-    color: var(--lightest);
-    border: none;
-    border-radius: 5px;
-    padding: 5px;
-    outline-width: 3px;
-    outline-style: double;
-    outline-color: var(--lightgreen);
-    outline-offset: -8px;
-    text-shadow: 0 1px 1px rgb(0 0 0 / 30%);
-    background: var(--action-gradient);
-    height: 40px;
-    cursor: pointer;
-  }
-  
-  button.has-icon {
-    outline: none;
-  }
-
-  button.invisible {
-    background: none;
-    outline: none;
-  }
-  
-  button.large {
-    font-size: 24px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: var(--action-hover);
-  }
-
-  button.invisible:hover {
-    background: none;
-  }
-
-  button:active {
-    background: #d3d3d3;
-    color: #868686;
-  }
-  
-  button.tiny-circle {
-    border-radius: 50px !important;
-    font-size: 10px;
-    width: 20px !important;
-    height: 20px !important;
-    outline: none !important;
-    padding-top: 3px !important;
-  }
-
-  button.delete {
-    background: var(--red) !important;
-    border-radius: 50px !important;
-    font-size: 10px;
-    width: 20px !important;
-    height: 20px !important;
-    outline: none !important;
-    padding-top: 3px !important;
-  }
-
-  button.delete:hover {
-    background: var(--lightred) !important;
-  }
-`;
-
 class MidiSetup extends s {
-    static get styles() { return [ styles$b, styles$a ] }
+    static get styles() { return [ styles$9, /* button */ ] }
 
     midi = new MidiController(this);
 
@@ -22020,7 +21935,7 @@ const template$8 = (scope) => {
         <button @click=${VoxController.toggleMicrophone}>${VoxController.active ? $`Stop Microphone` : $`Start Microphone`}</button>`;
 };
 
-const styles$9 = r$2`
+const styles$8 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22044,7 +21959,7 @@ const styles$9 = r$2`
 `;
 
 class MicSetup extends s {
-    static get styles() { return [ styles$9, styles$a ] }
+    static get styles() { return [ styles$8, /* button */ ] }
 
     vox = new VoxController(this);
 
@@ -22123,7 +22038,7 @@ const renderOptions = (scope, opts) => {
     })}`;
 };
 
-const styles$8 = r$2`
+const styles$7 = r$2`
     :host {
       font-size: 12px;
       display: flex;
@@ -22153,7 +22068,7 @@ const styles$8 = r$2`
 `;
 
 class TheoryOptions extends s {
-    static get styles() { return [ styles$8 ] }
+    static get styles() { return [ styles$7 ] }
 
     sets = new PracticeSetsController(this);
 
@@ -22197,7 +22112,7 @@ const template$6 = (scope) => {
     <button @click=${() => scope.synth.toggleMetronome()}>${scope.synth.isMetronomeRunning ? 'Stop' : 'Start'}</button>`;
 };
 
-const styles$7 = r$2`
+const styles$6 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22219,7 +22134,7 @@ const styles$7 = r$2`
 `;
 
 class Metronome extends s {
-    static get styles() { return [ styles$7, styles$a, styles$d ] }
+    static get styles() { return [ styles$6, /* button, type */ ] }
 
     synth = new Synth(this);
 
@@ -22230,7 +22145,7 @@ class Metronome extends s {
 
 customElements.define('bsharp-metronome-panel', Metronome);
 
-const styles$6 = r$2`
+const styles$5 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22334,7 +22249,7 @@ class PlaySongEvent extends Event {
 }
 
 class Playlist extends s {
-    static get styles() { return [ styles$6, styles$a, styles$d ] }
+    static get styles() { return [ styles$5, /* button, type */ ] }
 
     songsController = new SongsController(this);
     practiceSets = new PracticeSetsController(this);
@@ -22425,7 +22340,7 @@ const template$4 = (scope) => {
         </div>`;
 };
 
-const styles$5 = r$2`
+const styles$4 = r$2`
   :host {
     color-scheme: dark;
   }
@@ -22541,7 +22456,7 @@ class SidePanel extends s {
     mode = App.QUIZ_MODE;
     timer = new TimerController(this);
 
-    static get styles() { return [ styles$5, styles$a, styles$d ] }
+    static get styles() { return [ styles$4, /* button, type */ ] }
 
     static properties = {
         started: { type: Boolean },
@@ -22611,7 +22526,7 @@ const template$3 = (scope) => {
     <textarea placeholder="Use your own chords by adding here \rexample: C#7 E Gm" @change=${scope.onChangeCustomSet}></textarea>`;
 };
 
-const styles$4 = r$2`
+const styles$3 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -22705,7 +22620,7 @@ const styles$4 = r$2`
 `;
 
 class PlayQueue extends s {
-    static get styles() { return [ styles$4, styles$a ] }
+    static get styles() { return [ styles$3,  /* button */ ] }
 
     practicesets = new PracticeSetsController(this);
     songsController = new SongsController(this);
@@ -22729,7 +22644,7 @@ class PlayQueue extends s {
 
 customElements.define('bsharp-playqueue', PlayQueue);
 
-const styles$3 = r$2`
+const styles$2 = r$2`
   :host {
     width: 100%;
     height: 100%;
@@ -22788,7 +22703,7 @@ const template$2 = (scope) => {
 };
 
 class Modal extends s {
-    static get styles() { return [ styles$3, styles$a, styles$d ] }
+    static get styles() { return [ styles$2, /* button, type */ ] }
 
     static properties = {
         modal: { type: String },
@@ -22901,7 +22816,7 @@ const template$1 = (scope) => {
 
 };
 
-const styles$2 = r$2`
+const styles$1 = r$2`
   :host {
     display: flex;
     flex-direction: column;
@@ -23044,7 +22959,7 @@ const styles$2 = r$2`
 `;
 
 class Song extends s {
-    static get styles() { return [ styles$2, styles$a, styles$d ] }
+    static get styles() { return [ styles$1, /* button, type */ ] }
 
     static properties = {
         songName: { type: String },
@@ -23204,7 +23119,7 @@ const renderModal = (modal, opts) => {
     }
 };
 
-const styles$1 = r$2`
+const styles = r$2`
   :host {
     display: flex;
     height: 100%;
@@ -23248,29 +23163,6 @@ const styles$1 = r$2`
     font-weight: 100;
   }`;
 
-const styles = r$2`
-  :host {
-    --dark: #2a2a2a;
-    --darkish: #4a4a4a;
-    --notsodark: #6a6a6a;
-    --kindalight: #a9a9a9;
-    --light: #cacaca;
-    --lightest: #fafafa;
-
-    --darkgreen: #385b09;
-    --green: #4e7d0e;
-    --lightgreen: #7db72f;
-
-    --lightred: #c54a4a;
-    --red: #771414;
-
-    --action-color: var(--green);
-    --action-gradient: linear-gradient(to left top, var(--lightgreen) 0%, var(--green) 100%);
-    --action-hover: linear-gradient(to left top, var(--green) 0%, var(--darkgreen) 100%);
-
-    --incorrect-color: var(--red);
-  }`;
-
 class App extends s {
     static LIVEPLAY_MODE = 'liveplay';
 
@@ -23278,7 +23170,7 @@ class App extends s {
 
     static NO_MODE = 'none';
 
-    static get styles() { return [ styles$1, styles ] }
+    static get styles() { return [ styles, /* colors */ ] }
 
     static properties = {
         started: { type: Boolean },
