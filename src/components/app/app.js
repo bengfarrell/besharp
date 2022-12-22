@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import { template } from './app.html';
 import { styles } from './app.css';
-import { styles as colors } from '../style/colors.css';
+// import { styles as colors } from '../style/colors.css';
 import { Chord } from '../../musictheory';
 import { InputsController, Synth } from '../../inputs/index';
 import { ModalEvent } from '../modal/modalevent';
@@ -14,7 +14,7 @@ export class App extends LitElement {
 
     static NO_MODE = 'none';
 
-    static get styles() { return [ styles, colors ] }
+    static get styles() { return [ styles, /* colors */ ] }
 
     static properties = {
         started: { type: Boolean },

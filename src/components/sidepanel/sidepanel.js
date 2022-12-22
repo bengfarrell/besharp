@@ -1,8 +1,8 @@
 import { LitElement } from 'lit';
 import { template } from './sidepanel.html';
 import { styles } from './sidepanel.css';
-import { styles as button } from '../style/button.css';
-import { styles as type } from '../style/type.css.js';
+// import { styles as button } from '../style/button.css';
+// import { styles as type } from '../style/type.css.js';
 import { START_EVENT, STOP_EVENT } from './index';
 import { App } from '../app/';
 import { TimerController } from '../../models/timer.js';
@@ -12,7 +12,7 @@ export class SidePanel extends LitElement {
     mode = App.QUIZ_MODE;
     timer = new TimerController(this);
 
-    static get styles() { return [ styles, button, type ] }
+    static get styles() { return [ styles, /* button, type */ ] }
 
     static properties = {
         started: { type: Boolean },

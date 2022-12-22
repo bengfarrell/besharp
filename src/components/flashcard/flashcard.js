@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import { template } from './flashcard.html';
 import { styles } from './flashcard.css';
-import { styles as type } from '../style/type.css';
+// import { styles as type } from '../style/type.css';
 import { Note } from '../../musictheory';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { ScoreModelController } from '../../models/score';
@@ -12,7 +12,7 @@ import { App } from '../app';
 import { SongsController } from '../../models/songscontroller.js';
 
 export class FlashCard extends LitElement {
-    static get styles() { return [ styles, type ] }
+    static get styles() { return [ styles, /* type */] }
 
     static NOTES_TO_AUTOMATICALLY_TRANSITION = 5;
 

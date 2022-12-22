@@ -1,7 +1,7 @@
 import { LitElement } from 'lit';
 import { styles } from './playlist.css';
-import { styles as button } from '../../style/button.css';
-import { styles as type } from '../../style/type.css';
+// import { styles as button } from '../../style/button.css';
+// import { styles as type } from '../../style/type.css';
 import { template } from './playlist.html';
 import { ModalEvent } from '../../modal/modalevent';
 import { SongsController } from '../../../models/songscontroller';
@@ -9,7 +9,7 @@ import { PlaySongEvent } from './playsongevent';
 import { PracticeSetsController } from '../../../models/practicesets.js';
 
 export class Playlist extends LitElement {
-    static get styles() { return [ styles, button, type ] }
+    static get styles() { return [ styles, /* button, type */ ] }
 
     songsController = new SongsController(this);
     practiceSets = new PracticeSetsController(this);

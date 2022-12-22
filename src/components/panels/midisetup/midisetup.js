@@ -1,11 +1,11 @@
 import { LitElement } from 'lit';
 import { template } from './midisetup.html.js';
 import { styles } from './midisetup.css.js';
-import { styles as button } from '../../style/button.css.js';
+// import { styles as button } from '../../style/button.css.js';
 import { MidiController } from '../../../inputs/midi.js';
 
 export class MidiSetup extends LitElement {
-    static get styles() { return [ styles, button ] }
+    static get styles() { return [ styles, /* button */ ] }
 
     midi = new MidiController(this);
 

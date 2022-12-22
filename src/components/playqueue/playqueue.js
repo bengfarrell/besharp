@@ -1,13 +1,13 @@
 import { LitElement } from 'lit';
 import { template } from './playqueue.html';
 import { styles } from './playqueue.css';
-import { styles as button } from '../style/button.css';
+// import { styles as button } from '../style/button.css';
 import { PracticeSetsController } from '../../models/practicesets.js';
 import { Note } from '../../musictheory/index.js';
 import { SongsController } from '../../models/songscontroller.js';
 
 export class PlayQueue extends LitElement {
-    static get styles() { return [ styles, button ] }
+    static get styles() { return [ styles,  /* button */ ] }
 
     practicesets = new PracticeSetsController(this);
     songsController = new SongsController(this);

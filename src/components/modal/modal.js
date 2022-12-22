@@ -1,12 +1,12 @@
 import { LitElement } from 'lit';
 import { styles } from './modal.css';
-import { styles as button } from '../style/button.css';
-import { styles as type } from '../style/type.css';
+// import { styles as button } from '../style/button.css';
+// import { styles as type } from '../style/type.css';
 import { template } from './modal.html';
 import { ModalEvent } from './modalevent';
 
 export class Modal extends LitElement {
-    static get styles() { return [ styles, button, type ] }
+    static get styles() { return [ styles, /* button, type */ ] }
 
     static properties = {
         modal: { type: String },
